@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Adilkhan Mustakhan — Portfolio</title>
+<meta name="description" content="Data & Logistics Analyst / Presentation Designer. Case studies and design work.">
+<style>
+:root{--ink:#111;--mute:#777;--line:#e4e4e4;--bg:#fff;--soft:#f5f5f5;--acc:#1aa7a1}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}a:hover{text-decoration:underline}
+.wrap{padding:0 4vw}
+header{position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);z-index:10;border-bottom:1px solid var(--line)}
+header .wrap{display:flex;justify-content:space-between;align-items:center;height:48px;font-size:12px}
+nav{display:flex;gap:22px;margin-right:34px}
+.lang button{background:none;border:0;font:inherit;cursor:pointer;color:var(--mute);padding:0 3px}
+.lang button.on{color:var(--ink);text-decoration:underline}
+.hero{min-height:calc(100vh - 48px);display:flex}
+.hero-in{display:flex;flex-direction:column;justify-content:space-between;width:100%;padding-top:28px;padding-bottom:3vh}
+.h-top{font-size:13px;line-height:1.5;letter-spacing:-.02em}
+.h-date{margin-top:0;font-size:12px}
+.h-title{font-weight:700;font-size:17px;letter-spacing:-.03em;margin-top:2px}
+.h-by{font-size:12px}
+.h-meta{position:relative;z-index:3;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;letter-spacing:-.01em;margin-bottom:1.2vh}
+.h-meta i{font-style:normal;padding:0 8px}
+.h-links{display:flex;gap:26px;flex-wrap:wrap;align-items:center}
+.h-links a.hbtn{background:var(--ink);color:#fff;padding:6px 14px;border-radius:99px;border:0;margin-top:-4px;margin-bottom:-4px;transition:background .2s}
+.h-links a.hbtn:hover{background:#333}
+.h-links a{color:var(--ink);cursor:pointer;border-bottom:1px solid transparent;transition:border-color .2s}
+.h-links a:hover{border-bottom-color:var(--ink);text-decoration:none}
+.giant{pointer-events:none;font-weight:700;letter-spacing:-.085em;line-height:.74;font-size:24vw;white-space:nowrap;display:block;width:max-content;margin-left:-.04em;padding-top:.05em}
+.intro{padding-top:5vh;padding-bottom:4vh}
+.open{color:var(--mute);font-size:12px;align-self:center;margin-left:8px}
+.cta{display:flex;gap:12px;margin:0 0 34px;flex-wrap:wrap}
+.btn{border:1px solid var(--ink);padding:10px 18px;font-size:13px;border-radius:99px;cursor:pointer;background:none;font-family:inherit;color:var(--ink)}
+.btn.fill{background:var(--ink);color:#fff}
+.btn:hover{text-decoration:none;background:var(--ink);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-top:5vh}
+.stats div{padding:22px 0;padding-right:18px}
+.stats b{display:block;font-size:clamp(26px,3.4vw,48px);letter-spacing:-.04em;line-height:1}
+.stats span{color:var(--mute);font-size:12px}
+.kicker{font-size:12px;color:var(--mute);margin-bottom:10px}
+h2{font-size:clamp(34px,6.4vw,92px);font-weight:700;letter-spacing:-.05em;line-height:.95;max-width:14ch}
+section{padding:8vh 0;border-top:1px solid var(--line);scroll-margin-top:44px;min-height:calc(100vh - 40px)}
+.wtop{min-height:calc(92vh - 40px);display:flex;flex-direction:column}
+#work{min-height:0;padding-bottom:0}
+#contact{min-height:0;padding:11vh 0 7vh}
+.lead{max-width:60ch;margin-top:26px;font-size:15px;color:#333}
+/* cases */
+details.case{border-top:1px solid var(--line);margin-top:0}
+details.case:first-of-type{margin-top:0}
+details.case summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:60px 1.3fr 1fr 40px;gap:18px;align-items:baseline;padding:26px 0}
+details.case summary::-webkit-details-marker{display:none}
+.n{color:var(--mute);font-size:12px}
+.t{font-size:clamp(20px,2.6vw,36px);font-weight:700;letter-spacing:-.04em;line-height:1.05}
+.tags{color:var(--mute);font-size:12px}
+.pl{font-size:22px;text-align:right;transition:transform .2s}
+details[open] .pl{transform:rotate(45deg)}
+.body{display:grid;grid-template-columns:60px 1fr;gap:18px;padding-bottom:50px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:26px}
+.cols h4{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.cols p{font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.chips i{font-style:normal;font-size:11px;border:1px solid var(--line);border-radius:99px;padding:3px 10px}
+.imgs{display:grid;gap:12px}
+.imgs.two{grid-template-columns:1fr 1fr}
+.imgs.three{grid-template-columns:repeat(3,1fr)}
+.imgs img{width:100%;display:block;background:var(--soft)}
+.note{font-size:11px;color:var(--mute);margin-top:10px}
+/* tools */
+/* skills */
+.sk{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;margin-top:6vh}
+.sk h3{font-size:18px;letter-spacing:-.03em;margin-bottom:10px}
+.sk ul{list-style:none}
+.sk li{padding:8px 0;border-top:1px solid var(--line);font-size:13px}
+header{overflow:hidden}
+.hr{display:flex;align-items:center}
+.rwrap{max-width:0;overflow:hidden;transition:max-width .6s cubic-bezier(.2,.8,.2,1);display:flex;justify-content:flex-end}
+.rwrap.show{max-width:220px}
+.rbtn{margin-left:20px;background:var(--ink);color:#fff;padding:7px 16px;border-radius:99px;font-size:12px;white-space:nowrap;transform:translateX(110%);opacity:0;pointer-events:none;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.rwrap.show .rbtn{transform:none;opacity:1;pointer-events:auto}
+.rbtn:hover{text-decoration:none;background:#333}
+/* motion */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+.giant span{display:inline-block;transform:translateY(60%);opacity:0;animation:up .9s cubic-bezier(.2,.8,.2,1) forwards}
+@keyframes up{to{transform:none;opacity:1}}
+.giant,.giant span{cursor:default;user-select:none;-webkit-user-select:none}
+.giant span{pointer-events:auto;transition:translate .18s ease-out}
+.giant span:hover{translate:0 -.045em;transition:translate .28s cubic-bezier(.2,.8,.2,1)}
+.h-top,.h-meta{animation:fade 1s .5s both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+details.case summary{transition:padding-left .3s,background .3s}
+details.case summary:hover{padding-left:14px;background:var(--soft)}
+.imgs img{transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.imgs img:hover{transform:scale(1.015)}
+.body{animation:open .5s ease}
+@keyframes open{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.sk li{transition:padding-left .25s}.sk li:hover{padding-left:8px}
+.mail{background:linear-gradient(currentColor,currentColor) 0 100%/0 3px no-repeat;transition:background-size .4s}
+.mail:hover{background-size:100% 3px;text-decoration:none}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.giant span,.h-top,.h-meta{animation:none;opacity:1;transform:none}.rbtn,.rwrap{transition:none}}
+
+.burger{display:none;background:none;border:0;width:36px;height:36px;margin-left:8px;cursor:pointer;position:relative}
+.burger i{position:absolute;left:8px;right:8px;height:1.5px;background:#111;transition:transform .25s,top .25s}
+.burger i:nth-child(1){top:14px}.burger i:nth-child(2){top:21px}
+body.menu .burger i:nth-child(1){top:18px;transform:rotate(45deg)}
+body.menu .burger i:nth-child(2){top:18px;transform:rotate(-45deg)}
+@media(hover:none){.giant span:hover{translate:none}}
+@media(max-width:760px){
+  header{overflow:visible}
+  header .wrap{height:52px}
+  .hero{min-height:calc(100svh - 52px)}
+  .hero-in{padding-top:20px}
+  .h-meta{flex-direction:column;gap:12px;align-items:flex-start;margin-bottom:2vh}
+  .h-links{gap:14px 20px}
+  .giant{margin-left:-.03em}
+  .burger{display:block;position:absolute;left:calc(4vw - 8px);top:8px;margin:0}
+  header .wrap>a{margin-left:34px}
+  nav.mnav{display:none;position:fixed;top:52px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);flex-direction:column;gap:0;margin:0;padding:6px 4vw 14px}
+  body.menu nav.mnav{display:flex}
+  nav.mnav a{padding:14px 0;font-size:18px;border-bottom:1px solid var(--line)}
+  .rbtn{margin-left:10px;padding:6px 12px;font-size:11px}
+  .rwrap.show{max-width:150px}
+  section{padding:6vh 0;min-height:calc(100svh - 40px);scroll-margin-top:48px}
+  .wtop{min-height:calc(94svh - 40px)}
+  h2{font-size:clamp(32px,10vw,56px);max-width:none}
+  .lead{font-size:14px}
+  .stats div{padding:16px 0}
+  .stats b{font-size:30px}
+  .kicker{margin-bottom:8px}
+  details.case summary{padding:20px 0;gap:12px}
+  .t{font-size:20px}
+  .body{padding-bottom:34px}
+  .mail{font-size:6.4vw;overflow-wrap:anywhere}
+  .links{gap:18px 24px}
+  .sk{gap:26px}
+}
+/* [anim-1] hover preview on project rows (idea: 21st.dev Hover Preview) */
+#hp{position:fixed;left:0;top:0;width:280px;height:158px;z-index:20;pointer-events:none;opacity:0;transform:translate3d(-999px,-999px,0);transition:opacity .2s ease;overflow:hidden;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.14);background:#f3f3f3}
+#hp.on{opacity:1}
+#hp img{width:100%;height:100%;object-fit:cover;display:block}
+/* [anim-2] smooth open/close of project rows (Chrome 131+, ignored elsewhere) */
+@supports (interpolate-size:allow-keywords){
+  details.case{interpolate-size:allow-keywords}
+  details.case::details-content{block-size:0;overflow:hidden;transition:block-size .45s cubic-bezier(.2,.8,.2,1),content-visibility .45s allow-discrete}
+  details.case[open]::details-content{block-size:auto}
+}
+/* [anim-3] micro-interactions: nav underline, button press */
+nav.mnav a{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .25s ease}
+nav.mnav a:hover{background-size:100% 1px;text-decoration:none}
+.btn:active,.hbtn:active,.rbtn:active{transform:scale(.97)}
+.btn,.hbtn,.rbtn{transition:background .2s,transform .12s}
+@media(prefers-reduced-motion:reduce){#hp{display:none}details.case::details-content{transition:none}nav.mnav a{transition:none}}
+.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.gal a{display:block;overflow:hidden;background:var(--soft)}
+.gal img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.gal a:hover img{transform:scale(1.03)}
+@media(max-width:900px){.gal{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){.gal{grid-template-columns:repeat(2,1fr);gap:8px}}
+/* contact */
+.mail{font-size:clamp(26px,5.4vw,80px);font-weight:700;letter-spacing:-.05em;margin-top:30px;display:inline-block}
+.links{display:flex;gap:26px;margin-top:40px;flex-wrap:wrap}
+footer{padding:30px 0 40px;color:var(--mute);font-size:11px;border-top:1px solid var(--line)}
+@media(max-width:900px){.sk{grid-template-columns:1fr}.cols{grid-template-columns:1fr}}
+@media(max-width:760px){.giant{letter-spacing:-.08em}.stats{grid-template-columns:1fr 1fr}.imgs.two,.imgs.three{grid-template-columns:1fr}nav{display:none}
+details.case summary{grid-template-columns:36px 1fr 28px}.tags{display:none}.body{grid-template-columns:1fr}.body>.n{display:none}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'',location.pathname);return false"><b>A. Mustakhan</b></a>
+  <div class="hr"><nav class="mnav">
+    <a href="#work" data-en="Work" data-ru="Работы"></a>
+    <a href="#skills" data-en="Skills" data-ru="Навыки"></a>
+    <a href="#contact" data-en="Contact" data-ru="Контакты"></a>
+  </nav><button class="burger" aria-label="Menu" onclick="document.body.classList.toggle('menu')"><i></i><i></i></button><div class="lang"><button data-l="en" class="on">EN</button>/<button data-l="ru">RU</button></div><div class="rwrap" id="rwrap"><a class="rbtn" href="resume/Adilkhan_Mustakhan_Resume.pdf" download data-en="Download résumé" data-ru="Скачать резюме"></a></div></div>
+</div></header>
+
+<main id="top" class="hero">
+  <div class="wrap hero-in">
+    <div class="h-top">
+      <div class="h-date">2026</div>
+      <div class="h-by" data-en="Presented by: Adilkhan Mustakhan" data-ru="Автор: Adilkhan Mustakhan"></div>
+    </div>
+    <div class="h-bottom">
+      <div class="h-meta">
+        <span>Data Analyst <i>/</i> Logistics <i>/</i> Presentation Designer</span>
+        <span class="h-links"><a href="https://www.linkedin.com/in/adilkhan-mustakhan" target="_blank" rel="noopener">LinkedIn</a><a href="https://freelancehunt.com/freelancer/adilmusta2303.html" target="_blank" rel="noopener">Freelancehunt</a><a href="https://www.upwork.com/freelancers/~01ba4706be298a06d2" target="_blank" rel="noopener">Upwork</a><a class="hbtn" href="resume/Adilkhan_Mustakhan_Resume.pdf" download data-en="Download résumé (PDF)" data-ru="Скачать резюме (PDF)"></a></span>
+      </div>
+      <div class="giant" id="giant">Portfolio</div>
+    </div>
+  </div>
+</main>
+
+<section id="work"><div class="wrap">
+  <div class="wtop">
+  <div class="kicker" data-en="01 — Selected work" data-ru="01 — Избранное"></div>
+  <h2 data-en="Projects, with the thinking behind them" data-ru="Проекты и логика за ними"></h2>
+  <p class="lead" data-en="Click a project to open it: the problem, what I did, the result and the tools." data-ru="Нажмите на проект: задача, что сделано, результат и инструменты."></p>
+  <div class="stats">
+    <div><b>3.45</b><span data-en="GPA, MSc Logistics, Satbayev University" data-ru="GPA, магистратура по логистике, Satbayev"></span></div>
+    <div><b>35 000</b><span data-en="target learners of the campaign I designed graphics for" data-ru="учащихся в аудитории кампании, для которой я делал графику"></span></div>
+    <div><b>900+</b><span data-en="spare parts coded to the OKTRU classifier" data-ru="позиций запчастей закодировано по ОКТРУ"></span></div>
+    <div><b>10 min</b><span data-en="supplier analysis, down from several hours" data-ru="анализ поставщиков вместо нескольких часов"></span></div>
+  </div>
+
+
+  </div>
+  <details class="case">
+    <summary><span class="n">01</span><span class="t" data-en="Uranium export routes: Kazakhstan to France" data-ru="Маршруты экспорта урана: Казахстан — Франция"></span><span class="tags">Thesis · AnyLogic · Route analysis</span><span class="pl">+</span></summary>
+    <div class="body"><span class="n"></span><div>
+      <div class="cols">
+        <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="Kazakhstan supplies about 40% of world uranium and France relies on nuclear for about 70% of electricity. Which route is best by time, stages and risk?" data-ru="Казахстан даёт около 40% мирового урана, а во Франции около 70% электроэнергии даёт атом. Какой маршрут лучше по времени, этапам и рискам?"></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Compared two routes (via St. Petersburg and the Middle Corridor), mapped bottlenecks and built a simulation model in AnyLogic." data-ru="Сравнил два маршрута (через Санкт-Петербург и Средний коридор), нашёл узкие места и построил имитационную модель в AnyLogic."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="26 days / 2 stages (high political risk) vs. 44 days / 5 stages (multimodal). Digitalisation estimated to save 3–5 days; thesis in progress." data-ru="26 суток / 2 этапа (высокий политический риск) против 44 суток / 5 этапов (мультимодальный). Цифровизация может дать 3–5 суток; работа в процессе."></p></div>
+      </div>
+      <div class="chips"><i>AnyLogic</i><i>Route comparison</i><i>Risk analysis</i><i>Presentation</i></div>
+      <div class="imgs two"><img src="img/cases_02.jpg" alt="Route comparison"><img src="img/cases_03.jpg" alt="Findings"></div>
+    </div></div>
+  </details>
+
+  <details class="case">
+    <summary><span class="n">02</span><span class="t" data-en="Spare-parts inventory dashboard" data-ru="Дашборд по запасам запчастей"></span><span class="tags">Excel · INDEX/MATCH · Dashboard</span><span class="pl">+</span></summary>
+    <div class="body"><span class="n"></span><div>
+      <div class="cols">
+        <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="Stock of spare parts and agricultural machinery was unclear: where is stock missing, where is capital stuck, what is obsolete?" data-ru="Запасы запчастей и сельхозтехники были непрозрачны: где дефицит, где заморожены деньги, что неликвидно?"></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Built self-updating Excel dashboards with INDEX/MATCH, IFERROR and dynamic dropdowns that classify every item as shortage, excess or obsolete." data-ru="Собрал самообновляемые Excel-дашборды (INDEX/MATCH, IFERROR, выпадающие списки), где каждая позиция помечена как дефицит, излишек или неликвид."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="One view for purchasing: what to buy now, what to stop buying, what to clear out." data-ru="Одна картина для закупок: что купить сейчас, что не покупать, что вывести."></p></div>
+      </div>
+      <div class="chips"><i>Excel</i><i>INDEX/MATCH</i><i>IFERROR</i><i>Dashboards</i></div>
+      <div class="imgs"><img src="img/set1_02_dashboard.jpg" alt="Inventory dashboard"></div>
+      <p class="note" data-en="Recreated with illustrative sample data; the original used company data." data-ru="Воспроизведено на примерных данных; оригинал использовал данные компании."></p>
+    </div></div>
+  </details>
+
+  <details class="case">
+    <summary><span class="n">03</span><span class="t" data-en="Supplier comparison model (EUR → KZT)" data-ru="Модель сравнения поставщиков (EUR → KZT)"></span><span class="tags">Excel · Procurement · Landed cost</span><span class="pl">+</span></summary>
+    <div class="body"><span class="n"></span><div>
+      <div class="cols">
+        <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="Comparing Total and Shell lubricant offers took hours: prices in EUR, different delivery terms and lead times." data-ru="Сравнение предложений Total и Shell по смазочным материалам занимало часы: цены в EUR, разные условия и сроки поставки."></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Built a model with automatic EUR→KZT conversion that calculates the full landed cost per unit and ranks suppliers." data-ru="Сделал модель с автоконвертацией EUR→KZT, которая считает полную стоимость единицы и ранжирует поставщиков."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="Analysis preparation went from several hours to about 10 minutes. " data-ru="Подготовка анализа сократилась с нескольких часов до примерно 10 минут. "></p></div>
+      </div>
+      <div class="chips"><i>Excel</i><i>Supplier evaluation</i><i>Incoterms</i><i>Currency conversion</i></div>
+      <div class="imgs two"><img src="img/set2_01_comparison.jpg" alt="Supplier comparison"><img src="img/set3_daily_report.jpg" alt="Daily report"></div>
+      <p class="note" data-en="Illustrative sample data. Right: a daily operations report concept." data-ru="Примерные данные. Справа: концепт ежедневного отчёта по операциям."></p>
+    </div></div>
+  </details>
+
+  <details class="case">
+    <summary><span class="n">04</span><span class="t" data-en="Forecasting, regression and optimisation" data-ru="Прогнозирование, регрессия, оптимизация"></span><span class="tags">Excel · Solver · MAPE</span><span class="pl">+</span></summary>
+    <div class="body"><span class="n"></span><div>
+      <div class="cols">
+        <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="Plan demand, choose carriers and routes with numbers, not intuition." data-ru="Планировать спрос, выбирать перевозчиков и маршруты по цифрам, а не по интуиции."></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Regression with seasonal factors (R² 0.96), forecast accuracy with MAPE, sea-vs-air cost comparison, travelling-salesman and transportation problems in Solver." data-ru="Регрессия с сезонными коэффициентами (R² 0,96), точность прогноза по MAPE, сравнение море/авиа, задачи коммивояжёра и транспортная задача в Solver."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="A repeatable toolkit for forecasting and logistics decisions. " data-ru="Повторяемый набор методов для прогнозов и логистических решений. "></p></div>
+      </div>
+      <div class="chips"><i>Excel</i><i>Solver</i><i>Regression</i><i>MAPE</i><i>ETS</i></div>
+      <div class="imgs"><img src="img/cases_05.jpg" alt="Excel models"></div>
+    </div></div>
+  </details>
+
+  <details class="case">
+    <summary><span class="n">05</span><span class="t" data-en="Inventory vs. balance sheet: KEGOC" data-ru="Запасы и баланс: KEGOC"></span><span class="tags">Financial analysis · Public data</span><span class="pl">+</span></summary>
+    <div class="body"><span class="n"></span><div>
+      <div class="cols">
+        <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="How did inventory of the national grid operator develop against assets, liabilities and equity in 2021–2023?" data-ru="Как менялись запасы оператора национальной сети относительно активов, обязательств и капитала в 2021–2023?"></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Analysed public annual-report figures, explained the drivers and wrote recommendations." data-ru="Проанализировал данные публичной отчётности, объяснил причины и подготовил рекомендации."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="Inventory +13.4% vs. assets +8%, liabilities +10%, equity +6.7%; recommendation to digitise inventory forecasting." data-ru="Запасы +13,4% при активах +8%, обязательствах +10%, капитале +6,7%; рекомендация цифровизировать прогноз запасов."></p></div>
+      </div>
+      <div class="imgs"><img src="img/cases_04.jpg" alt="KEGOC"></div>
+    </div></div>
+  </details>
+
+  <details class="case">
+    <summary><span class="n">06</span><span class="t" data-en="Campaign graphics<br>for 35,000 learners" data-ru="Графика кампании<br>для 35 000 учащихся"></span><span class="tags">Canva · UN Volunteers · Design</span><span class="pl">+</span></summary>
+    <div class="body"><span class="n"></span><div>
+      <div class="cols">
+        <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="Raise course completion in the IBM SkillsBuild Reskilling Revolution Africa project (Kenya, Ethiopia, South Africa)." data-ru="Повысить завершаемость курсов в проекте IBM SkillsBuild Reskilling Revolution Africa (Кения, Эфиопия, ЮАР)."></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="As a UN online volunteer (VIO Society, 12 weeks) I designed flyers, banners, infographics and motivational messages in Canva. 12 of the graphics are shown below." data-ru="Как онлайн-волонтёр ООН (VIO Society, 12 недель) создавал флаеры, баннеры, инфографику и мотивационные сообщения в Canva. Ниже показаны 12 графических материалов."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="Materials for a programme targeting 35,000 learners across three countries." data-ru="Материалы для программы, рассчитанной на 35 000 учащихся в трёх странах."></p></div>
+      </div>
+      <div class="chips"><i>Canva</i><i>Flyers</i><i>Infographics</i><i>Banners</i></div>
+      <div class="gal"><a href="img/unv/11.jpg" target="_blank" rel="noopener"><img src="img/unv/11.jpg" alt="Campaign graphic 1" loading="lazy"></a><a href="img/unv/12.jpg" target="_blank" rel="noopener"><img src="img/unv/12.jpg" alt="Campaign graphic 2" loading="lazy"></a><a href="img/unv/13.jpg" target="_blank" rel="noopener"><img src="img/unv/13.jpg" alt="Campaign graphic 3" loading="lazy"></a><a href="img/unv/14.jpg" target="_blank" rel="noopener"><img src="img/unv/14.jpg" alt="Campaign graphic 4" loading="lazy"></a><a href="img/unv/15.jpg" target="_blank" rel="noopener"><img src="img/unv/15.jpg" alt="Campaign graphic 5" loading="lazy"></a><a href="img/unv/16.jpg" target="_blank" rel="noopener"><img src="img/unv/16.jpg" alt="Campaign graphic 6" loading="lazy"></a><a href="img/unv/17.jpg" target="_blank" rel="noopener"><img src="img/unv/17.jpg" alt="Campaign graphic 7" loading="lazy"></a><a href="img/unv/18.jpg" target="_blank" rel="noopener"><img src="img/unv/18.jpg" alt="Campaign graphic 8" loading="lazy"></a><a href="img/unv/19.jpg" target="_blank" rel="noopener"><img src="img/unv/19.jpg" alt="Campaign graphic 9" loading="lazy"></a><a href="img/unv/20.jpg" target="_blank" rel="noopener"><img src="img/unv/20.jpg" alt="Campaign graphic 10" loading="lazy"></a><a href="img/unv/21.jpg" target="_blank" rel="noopener"><img src="img/unv/21.jpg" alt="Campaign graphic 11" loading="lazy"></a><a href="img/unv/22.jpg" target="_blank" rel="noopener"><img src="img/unv/22.jpg" alt="Campaign graphic 12" loading="lazy"></a></div>
+      <p class="note" data-en="Partner logos belong to their organisations." data-ru="Логотипы партнёров принадлежат соответствующим организациям."></p>
+    </div></div>
+  </details>
+
+  <details class="case">
+    <summary><span class="n">07</span><span class="t" data-en="Brand and event graphics: Mafia Almaty, MAFGAME" data-ru="Брендинг и графика: Mafia Almaty, MAFGAME"></span><span class="tags">Logo · Cards · Poster</span><span class="pl">+</span></summary>
+    <div class="body"><span class="n"></span><div>
+      <div class="cols">
+        <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="A club and a tournament needed a recognisable look across social media, cards and tables." data-ru="Клубу и турниру нужен был узнаваемый вид в соцсетях, на картах и столах."></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Neon line-art logo with wordmark, avatar version, playing-card back and an award poster." data-ru="Неоновый логотип с надписью, версия для аватара, рубашка карт и постер для награждения."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="A consistent visual set used for a club and a regional tournament." data-ru="Единый визуальный набор для клуба и регионального турнира."></p></div>
+      </div>
+      <div class="imgs three"><img src="img/design_02.jpg" alt="Logo"><img src="img/design_03.jpg" alt="Cards"><img src="img/design_04.jpg" alt="Poster"></div>
+    </div></div>
+  </details>
+  <div style="border-top:1px solid var(--line)"></div>
+</div></section>
+
+<section id="skills"><div class="wrap">
+  <div class="kicker" data-en="02 — Skills & tooling" data-ru="02 — Навыки и инструменты"></div>
+  <h2 data-en="The stack I reach for" data-ru="Чем я работаю"></h2>
+  <div class="sk">
+    <div><h3 data-en="Data & Automation" data-ru="Данные и автоматизация"></h3><ul>
+      <li>Excel: PivotTables, INDEX/MATCH, IFERROR, dashboards</li><li>Python: document automation</li><li>Power BI · SQL (basics)</li><li>Fuzzy matching (OKTRU coding)</li><li>KoBo Toolbox data collection</li></ul></div>
+    <div><h3 data-en="Supply Chain & Logistics" data-ru="Цепи поставок и логистика"></h3><ul>
+      <li>Procurement planning, supplier evaluation</li><li>Import documentation, Incoterms</li><li>Inventory and warehouse operations</li><li>Public procurement, tendering</li><li>AnyLogic simulation, 1C ERP</li></ul></div>
+    <div><h3 data-en="Presentation & Design" data-ru="Презентации и дизайн"></h3><ul>
+      <li>Canva, Figma, PowerPoint</li><li>Reports and pitch decks</li><li>Infographics and dashboards</li><li>Logos, posters, flyers</li><li>RU · KZ · EN content</li></ul></div>
+  </div>
+</div></section>
+
+
+<section id="contact"><div class="wrap">
+  <div class="kicker" data-en="03 — Contact" data-ru="03 — Контакты"></div>
+  <h2 data-en="Let's work together" data-ru="Давайте работать вместе"></h2>
+  <p class="lead" data-en="Open to remote work." data-ru="Открыт к удалённой работе."></p>
+  <a class="mail" href="mailto:adilkhanmustakhan@gmail.com">adilkhanmustakhan@gmail.com</a>
+  <div class="links">
+    <a href="https://www.linkedin.com/in/adilkhan-mustakhan" target="_blank" rel="noopener">LinkedIn ↗</a>
+    <a href="https://freelancehunt.com/freelancer/adilmusta2303.html" target="_blank" rel="noopener">Freelancehunt ↗</a>
+    <a href="https://www.upwork.com/freelancers/~01ba4706be298a06d2" target="_blank" rel="noopener">Upwork ↗</a>
+  </div>
+</div></section>
+<div id="hp" aria-hidden="true"><img alt=""></div>
+<footer><div class="wrap">© 2026 Adilkhan Mustakhan</div></footer>
+
+<script>
+document.querySelectorAll('nav.mnav a').forEach(function(a){a.addEventListener('click',function(){document.body.classList.remove('menu')})});
+function setLang(l){
+  document.documentElement.lang=l;
+  document.querySelectorAll("[data-en]").forEach(function(e){e.innerHTML=e.getAttribute("data-"+l)});
+  document.querySelectorAll(".lang button").forEach(function(b){b.classList.toggle("on",b.dataset.l===l)});
+  try{localStorage.setItem("lang",l)}catch(_){}
+}
+document.querySelectorAll(".lang button").forEach(function(b){b.onclick=function(){setLang(b.dataset.l)}});
+var $=function(i){return document.getElementById(i)};
+function fit(){var g=$('giant'),w=g.parentNode.clientWidth;g.style.fontSize='100px';var k=w/g.getBoundingClientRect().width*100*.99;g.style.fontSize=k+'px'}
+window.addEventListener('resize',fit);window.addEventListener('load',fit);
+var s="en";try{s=localStorage.getItem("lang")||((navigator.language||"").slice(0,2)==="ru"?"ru":"en")}catch(_){}
+setLang(s);
+(function(){
+  var g=$('giant'),t=g.textContent;g.setAttribute('aria-label',t);g.innerHTML=t.split('').map(function(c,i){return '<span aria-hidden="true" style="animation-delay:'+(0.05*i)+'s">'+c+'</span>'}).join('');
+  fit();
+  var rb=$('rwrap'),hero=document.querySelector('.hero');
+  function sc(){rb.classList.toggle('show',window.scrollY>hero.offsetHeight*0.55)}
+  window.addEventListener('scroll',sc,{passive:true});sc();
+  var els=document.querySelectorAll('.stats>div,.cta,details.case,.sk>div,section .kicker,section h2,section .lead,.mail,.links');
+  els.forEach(function(e,i){e.classList.add('rv')});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}})},{threshold:.12});
+    els.forEach(function(e){io.observe(e)});
+  }else els.forEach(function(e){e.classList.add('in')});
+  // count-up for stats
+  document.querySelectorAll('.stats b').forEach(function(b){
+    var raw=b.textContent,m=raw.match(/^([\d.,]+(?:\s\d{3})*)(.*)$/);if(!m)return;
+    var num=parseFloat(m[1].replace(/\s/g,'').replace(',','.')),dec=(m[1].split('.')[1]||'').length,suf=m[2],sp=m[1].indexOf(' ')>-1;
+    if(isNaN(num))return;
+    var done=false;
+    new IntersectionObserver(function(es,o){if(es[0].isIntersecting&&!done){done=true;o.disconnect();
+      var t0=performance.now();(function f(t){var p=Math.min(1,(t-t0)/1200),e=1-Math.pow(1-p,3),v=num*e;
+        var str=dec?v.toFixed(dec):Math.round(v).toString();if(sp)str=str.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+        b.textContent=str+suf;if(p<1)requestAnimationFrame(f)})(t0)}},{threshold:.5}).observe(b);
+  });
+})();
+
+/* [anim-1] hover preview */
+(function(){
+  if(!window.matchMedia||!matchMedia('(hover:hover) and (pointer:fine)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var hp=document.getElementById('hp'),im=hp.querySelector('img');
+  var map=['cases_02','set1_02_dashboard','set2_01_comparison','cases_05','cases_04','flyer','design_02'];
+  var x=0,y=0,tx=0,ty=0,raf=0,cur=null;
+  function loop(){x+=(tx-x)*.18;y+=(ty-y)*.18;hp.style.transform='translate3d('+x+'px,'+y+'px,0)';raf=requestAnimationFrame(loop)}
+  document.querySelectorAll('details.case').forEach(function(d,i){
+    var sm=d.querySelector('summary');if(!sm||!map[i])return;
+    sm.addEventListener('mouseenter',function(e){if(d.open)return;im.src='img/'+map[i]+'.jpg';tx=x=e.clientX+22;ty=y=e.clientY-90;hp.classList.add('on');if(!raf)raf=requestAnimationFrame(loop)});
+    sm.addEventListener('mousemove',function(e){tx=e.clientX+22;ty=e.clientY-90});
+    function off(){hp.classList.remove('on')}
+    sm.addEventListener('mouseleave',off);sm.addEventListener('click',off);
+  });
+  window.addEventListener('scroll',function(){hp.classList.remove('on')},{passive:true});
+})();
+</script>
+</body>
+</html>
