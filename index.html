@@ -166,7 +166,7 @@ nav.mnav a:hover{background-size:100% 1px;text-decoration:none}
 /* [anim-4] typing effect on section headings */
 .tw{visibility:hidden}
 h2 .w{display:inline-block;white-space:nowrap}
-.caret{display:inline-block;width:.05em;height:.8em;background:currentColor;margin-left:.04em;vertical-align:-.03em;animation:blink .8s steps(1) infinite}
+.caret{display:inline-block;width:.05em;height:.8em;background:currentColor;margin-left:.04em;vertical-align:-.03em}
 @keyframes blink{50%{opacity:0}}
 /* contact */
 .mail{font-size:clamp(26px,5.4vw,80px);font-weight:700;letter-spacing:-.05em;margin-top:30px;display:inline-block}
@@ -413,7 +413,7 @@ setLang(s);
     var n=0;(function step(){
       if(!h.contains(chars[0])){return}
       if(n<chars.length){chars[n].style.opacity='1';chars[n].after(caret);n++;setTimeout(step,36)}
-      else setTimeout(function(){caret.remove()},700);
+      else{caret.addEventListener('animationend',function(){caret.remove()});caret.style.animation='blink .8s steps(1) 3';setTimeout(function(){caret.remove()},3200)}
     })();
   }
   var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){io.unobserve(x.target);type(x.target)}})},{threshold:.35});
