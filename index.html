@@ -217,7 +217,7 @@ details.case summary{grid-template-columns:36px 1fr 28px}.tags{display:none}.bod
 #globe.on{opacity:1}
 #globe.drag{cursor:grabbing}
 @media(max-width:760px){#globe{width:min(78vw,46svh);right:50%;transform:translateX(50%);top:7svh}/* [fx-2] scroll progress hairline under the header */
-#prog{position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ink);transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
+#prog{position:fixed;left:0;top:0;height:2px;width:100%;z-index:30;background:var(--ink);transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
 /* [fx-3] magnetic buttons */
 .mag{will-change:transform}
 /* [fx-4] smooth open/close for projects and show-more toggles: JS, works in Safari too */
@@ -227,7 +227,8 @@ details.case summary:focus-visible{outline-offset:-2px}
 @media(prefers-reduced-motion:reduce){#globe,</style>
 </head>
 <body>
-<header><div id="prog" aria-hidden="true"></div><div class="wrap">
+<div id="prog" aria-hidden="true"></div>
+<header><div class="wrap">
   <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});history.replaceState(null,'',location.pathname);return false"><b>A. Mustakhan</b></a>
   <div class="hr"><nav class="mnav">
     <a href="#work" data-en="Work" data-ru="Работы"></a>
@@ -609,8 +610,8 @@ setLang(s);
 /* ===== [fx-2] scroll progress hairline ===== */
 (function(){
   var b=document.getElementById('prog');if(!b)return;var tick=0;
-  function u(){tick=0;var h=document.documentElement,m=h.scrollHeight-h.clientHeight;b.style.transform='scaleX('+(m>0?h.scrollTop/m:0)+')'}
-  window.addEventListener('scroll',function(){if(!tick){tick=1;requestAnimationFrame(u)}},{passive:true});u();
+  function u(){tick=0;var h=document.scrollingElement||document.documentElement,m=h.scrollHeight-h.clientHeight,y=window.scrollY||h.scrollTop;b.style.transform='scaleX('+(m>0?Math.min(1,y/m):0)+')'}
+  document.addEventListener('scroll',function(){if(!tick){tick=1;requestAnimationFrame(u)}},{passive:true,capture:true});window.addEventListener('resize',u);u();
 })();
 
 /* ===== [fx-3] magnetic buttons (fine pointers only) ===== */
