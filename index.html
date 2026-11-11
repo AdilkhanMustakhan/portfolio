@@ -216,7 +216,8 @@ details.case summary{grid-template-columns:36px 1fr 28px}.tags{display:none}.bod
 #globe{position:absolute;top:0;right:0;width:min(42vw,50vh,580px);cursor:grab;touch-action:pan-y;opacity:0;transition:opacity 1.2s var(--ease) .3s;-webkit-tap-highlight-color:transparent}
 #globe.on{opacity:1}
 #globe.drag{cursor:grabbing}
-@media(max-width:760px){#globe{width:min(78vw,46svh);right:50%;transform:translateX(50%);top:7svh}/* [fx-2] scroll progress hairline under the header */
+@media(max-width:760px){#globe{right:50%;transform:translateX(50%);top:6svh}}
+/* [fx-2] scroll progress line */
 #prog{position:fixed;left:0;top:0;height:2px;width:100%;z-index:30;background:var(--ink);transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
 /* [fx-3] magnetic buttons */
 .mag{will-change:transform}
@@ -224,7 +225,8 @@ details.case summary{grid-template-columns:36px 1fr 28px}.tags{display:none}.bod
 /* keyboard: visible focus everywhere */
 :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:2px}
 details.case summary:focus-visible{outline-offset:-2px}
-@media(prefers-reduced-motion:reduce){#globe,</style>
+@media(prefers-reduced-motion:reduce){#globe{transition:none}#prog{display:none}}
+</style>
 </head>
 <body>
 <div id="prog" aria-hidden="true"></div>
