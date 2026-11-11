@@ -161,17 +161,12 @@ body.menu .burger i:nth-child(2){top:18px;transform:rotate(-45deg)}
 #hp.on{opacity:1}
 #hp img{width:100%;height:100%;object-fit:cover;display:block}
 /* [anim-2] smooth open/close of project rows (Chrome 131+, ignored elsewhere) */
-@supports (interpolate-size:allow-keywords){
-  details.case{interpolate-size:allow-keywords}
-  details.case::details-content{block-size:0;overflow:hidden;transition:block-size .45s cubic-bezier(.2,.8,.2,1),content-visibility .45s allow-discrete}
-  details.case[open]::details-content{block-size:auto}
-}
 /* [anim-3] micro-interactions: nav underline, button press */
 nav.mnav a{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .25s ease}
 nav.mnav a:hover{background-size:100% 1px;text-decoration:none}
 .btn:active,.hbtn:active,.rbtn:active{transform:scale(.97)}
 .btn,.hbtn,.rbtn{transition:background .2s,transform .12s}
-@media(prefers-reduced-motion:reduce){#hp{display:none}details.case::details-content{transition:none}nav.mnav a{transition:none}}
+@media(prefers-reduced-motion:reduce){#hp{display:none}nav.mnav a{transition:none}}
 .gal{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .gal a{display:block;overflow:hidden;background:var(--soft)}
 .gal img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
@@ -222,15 +217,10 @@ details.case summary{grid-template-columns:36px 1fr 28px}.tags{display:none}.bod
 #globe.on{opacity:1}
 #globe.drag{cursor:grabbing}
 @media(max-width:760px){#globe{width:min(78vw,46svh);right:50%;transform:translateX(50%);top:7svh}/* [fx-2] scroll progress hairline under the header */
-#prog{position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--ink);transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
+#prog{position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ink);transform-origin:0 50%;transform:scaleX(0);pointer-events:none}
 /* [fx-3] magnetic buttons */
 .mag{will-change:transform}
-/* [fx-4] smooth open for the "show more" toggles, same curve as project rows */
-@supports (interpolate-size:allow-keywords){
-  details.more{interpolate-size:allow-keywords}
-  details.more::details-content{block-size:0;overflow:hidden;transition:block-size .45s var(--ease),content-visibility .45s allow-discrete}
-  details.more[open]::details-content{block-size:auto}
-}
+/* [fx-4] smooth open/close for projects and show-more toggles: JS, works in Safari too */
 /* keyboard: visible focus everywhere */
 :focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:2px}
 details.case summary:focus-visible{outline-offset:-2px}
@@ -626,10 +616,33 @@ setLang(s);
 /* ===== [fx-3] magnetic buttons (fine pointers only) ===== */
 (function(){
   if(!matchMedia('(hover:hover) and (pointer:fine)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  document.querySelectorAll('.hbtn,.btn,.rbtn,.mail').forEach(function(el){
-    el.classList.add('mag');var max=el.classList.contains('mail')?8:6;
-    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transition='transform .2s var(--ease),background .2s';el.style.transform='translate('+(x*max*2).toFixed(1)+'px,'+(y*max).toFixed(1)+'px)'});
-    el.addEventListener('pointerleave',function(){el.style.transition='transform var(--t) var(--ease),background .2s';el.style.transform=''});
+  document.querySelectorAll('.hbtn,.btn,.rbtn,.mail,.lang button').forEach(function(el){
+    el.classList.add('mag');var big=el.classList.contains('mail'),max=big?14:10,zone=big?40:28;
+    var host=el.parentNode;
+    function move(e){var r=el.getBoundingClientRect(),x=e.clientX-(r.left+r.width/2),y=e.clientY-(r.top+r.height/2),dx=r.width/2+zone,dy=r.height/2+zone;
+      if(Math.abs(x)>dx||Math.abs(y)>dy){reset();return}
+      var k=1-Math.max(Math.abs(x)/dx,Math.abs(y)/dy)*.35;el.style.transition='transform .18s var(--ease),background .2s';el.style.transform='translate('+(x/dx*max*k).toFixed(1)+'px,'+(y/dy*max*.6*k).toFixed(1)+'px)'}
+    function reset(){if(!el.style.transform)return;el.style.transition='transform var(--t) var(--ease),background .2s';el.style.transform=''}
+    host.addEventListener('pointermove',move);host.addEventListener('pointerleave',reset);
+  });
+})();
+
+/* ===== [fx-4] accordion motion for project rows and show-more toggles ===== */
+(function(){
+  var RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+  document.querySelectorAll('details.case,details.more').forEach(function(d){
+    var sm=d.querySelector(':scope>summary'),busy=null;if(!sm)return;
+    sm.addEventListener('click',function(e){
+      if(RM||!d.animate)return;e.preventDefault();
+      if(busy){busy.cancel()}
+      var start=d.offsetHeight,opening=!d.open||d.classList.contains('closing');
+      d.style.overflow='hidden';
+      if(opening){d.classList.remove('closing');d.open=true;var end=d.scrollHeight;var b=d.querySelector(':scope>.body,:scope>ul,:scope>.xr');}
+      else{d.classList.add('closing');var end=sm.offsetHeight+(parseFloat(getComputedStyle(d).borderTopWidth)||0)}
+      busy=d.animate({height:[start+'px',end+'px']},{duration:450,easing:'cubic-bezier(.2,.8,.2,1)'});
+      busy.onfinish=function(){busy=null;d.style.overflow='';if(!opening){d.open=false;d.classList.remove('closing')}};
+      busy.oncancel=function(){d.style.overflow=''};
+    });
   });
 })();
 </script>
