@@ -82,10 +82,13 @@ details[open] .pl{transform:rotate(45deg)}
 .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-bottom:26px}
 .cols h4{font-size:11px;color:var(--mute);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
 .cols p{font-size:14px}
+.cols p+p{margin-top:10px}
+.case-links{margin:0 0 18px}.case-links .btn{padding:8px 15px;font-size:12px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
 .chips i{font-style:normal;font-size:11px;border:1px solid var(--line);border-radius:99px;padding:3px 10px}
 .imgs{display:grid;gap:12px}
 .imgs.two{grid-template-columns:1fr 1fr}
+.imgs.shots{margin-bottom:12px}.imgs.shots img{aspect-ratio:16/10;object-fit:cover;object-position:top left;border:1px solid var(--line)}
 .imgs.three{grid-template-columns:repeat(3,1fr)}
 .imgs img{width:100%;display:block;background:var(--soft)}
 .note{font-size:11px;color:var(--mute);margin-top:10px}
@@ -304,16 +307,18 @@ html[data-theme=dark] .imgs img,html[data-theme=dark] .gal img{filter:brightness
   </details>
 
   <details class="case">
-    <summary><span class="n">02</span><span class="t" data-en="Taxonomy and testing for an AI policy tracker" data-ru="Таксономия и проверка ИИ-трекера политик"></span><span class="tags">Text analysis · Taxonomy · AI evaluation</span><span class="pl">+</span></summary>
+    <summary><span class="n">02</span><span class="t" data-en="Regional Policy Tracker: taxonomy and AI checks" data-ru="Региональный трекер политик: таксономия и проверка ИИ"></span><span class="tags">Taxonomy · NDC / NAP · AI evaluation</span><span class="pl">+</span></summary>
     <div class="body"><span class="n"></span><div>
       <div class="cols">
         <div><h4 data-en="Problem" data-ru="Задача"></h4><p data-en="An AI tool pulls climate and disaster commitments out of national plans (NDCs and NAPs). How do we know its labels are right?" data-ru="ИИ-инструмент извлекает климатические обязательства и меры по снижению рисков бедствий из национальных планов (NDC и NAP). Как понять, что он размечает правильно?"></p></div>
-        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Reviewed the tool and its dashboard, checked its results against expert data, cleaned up the team&rsquo;s label taxonomy and turned it into a one-page label guide, and prepared a labelled draft of Uzbekistan&rsquo;s NDC 3.0 (86 statements)." data-ru="Проверил инструмент и дашборд, сверил результаты с экспертными данными, доработал таксономию меток и оформил её в понятный справочник, подготовил размеченный черновик NDC 3.0 Узбекистана (86 утверждений)."></p></div>
-        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="The AI found Kazakhstan&rsquo;s adaptation cost (USD 47 bn, 2026&ndash;2035) exactly as in our data. The taxonomy and findings were presented to UNDP in November 2026." data-ru="ИИ нашёл стоимость адаптации Казахстана (47 млрд долл., 2026–2035) точно как в наших данных. Таксономия и выводы представлены ПРООН в ноябре 2026."></p></div>
+        <div><h4 data-en="What I did" data-ru="Что сделано"></h4><p data-en="Reviewed the tool and its dashboard, checked its results against expert data, cleaned up the team&rsquo;s label taxonomy and turned it into a one-page label guide, and prepared a labelled draft of Uzbekistan&rsquo;s NDC 3.0 (86 statements)." data-ru="Проверил инструмент и дашборд, сверил результаты с экспертными данными, доработал таксономию меток и оформил её в понятный справочник, подготовил размеченный черновик NDC 3.0 Узбекистана (86 утверждений)."></p><p data-en="The team&rsquo;s final package: a climate policy taxonomy (5 sheets with a field guide) and prompts with rulesets for six model tasks, from translation and statement extraction to cited reports." data-ru="Итоговый пакет команды: таксономия климатической политики (5 листов со справочником полей) и промпты с правилами для шести задач модели: от перевода и извлечения утверждений до отчётов со ссылками на источник."></p></div>
+        <div><h4 data-en="Result" data-ru="Результат"></h4><p data-en="The AI found Kazakhstan&rsquo;s adaptation cost (USD 47 bn, 2026&ndash;2035) exactly as in our data. The taxonomy and findings were presented to UNDP in November 2026." data-ru="ИИ нашёл стоимость адаптации Казахстана (47 млрд долл., 2026–2035) точно как в наших данных. Таксономия и выводы представлены ПРООН в ноябре 2026."></p><p data-en="The public demo compares Belarus, Kazakhstan and Türkiye: 6 source documents, 721 claims, 464 of them about action, each linked to its source page." data-ru="Публичное демо сравнивает Беларусь, Казахстан и Турцию: 6 документов, 721 утверждение, из них 464 о конкретных действиях, у каждого есть ссылка на страницу источника."></p></div>
       </div>
       <div class="chips"><i>Taxonomy design</i><i>NDC / NAP analysis</i><i>AI output checks</i><i>Excel</i></div>
-      <div class="imgs two"><img src="img/taxonomy_02.jpg" alt="Label guide: four sections"><img src="img/taxonomy_01.jpg" alt="Label guide: information type"></div>
-      <p class="note" data-en="Team work in the UNDP Analysis team." data-ru="Командная работа в аналитической группе ПРООН."></p>
+      <div class="cta case-links"><a class="btn" href="https://merogith.github.io/PolicyTracker2" target="_blank" rel="noopener" data-en="Open the tracker ↗" data-ru="Открыть трекер ↗"></a><a class="btn" href="https://merogith.github.io/Climate-policy-taxonomy/climate-policy-taxonomy.html" target="_blank" rel="noopener" data-en="Taxonomy guide ↗" data-ru="Справочник таксономии ↗"></a><a class="btn" href="https://github.com/merogith/PolicyTracker2" target="_blank" rel="noopener">GitHub ↗</a></div>
+      <div class="imgs two shots"><img src="img/tracker_01.jpg" alt="Regional Policy Tracker: claim points by country and domain" loading="lazy"><img src="img/taxonomy_guide.jpg" alt="Climate policy taxonomy guide: a worked example from Kazakhstan&rsquo;s NDC 3.0" loading="lazy"></div>
+      <div class="imgs two"><img src="img/taxonomy_02.jpg" alt="Label guide: four sections" loading="lazy"><img src="img/taxonomy_01.jpg" alt="Label guide: information type" loading="lazy"></div>
+      <p class="note" data-en="Team work in the UNDP Analysis team. Tracker and guide published by the team; data snapshot of 22 October 2026." data-ru="Командная работа в аналитической группе ПРООН. Трекер и справочник опубликованы командой; данные на 22 октября 2026."></p>
     </div></div>
   </details>
 
@@ -544,7 +549,7 @@ setLang(s);
 (function(){
   if(!window.matchMedia||!matchMedia('(hover:hover) and (pointer:fine)').matches||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   var hp=document.getElementById('hp'),im=hp.querySelector('img');
-  var map=['','taxonomy_02','cases_02','set1_02_dashboard','set2_01_comparison','cases_05','cases_04','flyer','design_02','unicef_01','demoday_en_1'];
+  var map=['','tracker_01','cases_02','set1_02_dashboard','set2_01_comparison','cases_05','cases_04','flyer','design_02','unicef_01','demoday_en_1'];
   var x=0,y=0,tx=0,ty=0,raf=0,cur=null;
   function loop(){x+=(tx-x)*.18;y+=(ty-y)*.18;hp.style.transform='translate3d('+x+'px,'+y+'px,0)';raf=requestAnimationFrame(loop)}
   document.querySelectorAll('details.case').forEach(function(d,i){
