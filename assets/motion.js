@@ -21,7 +21,7 @@
       gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
       gsap.ticker.lagSmoothing(0);
       window.goTo = function (t) {
-        lenis.scrollTo(t === 0 ? 0 : t, { duration: 1.6, easing: function (x) { return 1 - Math.pow(1 - x, 4); } });
+        lenis.scrollTo(window.anchorY(t), { duration: 1.6, easing: function (x) { return 1 - Math.pow(1 - x, 4); } });
       };
       window.addEventListener('menutoggle', function () {
         document.body.classList.contains('menu') ? lenis.stop() : lenis.start();

@@ -22,8 +22,17 @@ window.addEventListener('resize',fit);
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){fit();window.dispatchEvent(new Event('resize'));window.dispatchEvent(new Event('fontsready'))});
 
 /* ---------- smooth-scroll helper (motion.js replaces it with Lenis) ---------- */
-window.goTo=function(target){var el=typeof target==='string'?document.querySelector(target):target;
-  window.scrollTo({top:el?el.getBoundingClientRect().top+scrollY:0,behavior:RM?'auto':'smooth'})};
+/* A section link stops with the section's label pill just under the header pills, every time.
+   offsetTop is used (not getBoundingClientRect) so a label still mid-animation doesn't shift the stop. */
+window.anchorY=function(target){
+  if(target===0||target==null)return 0;
+  var el=typeof target==='string'?document.querySelector(target):target;if(!el)return 0;
+  var a=el.querySelector('.kicker')||el,y=0,n=a;while(n){y+=n.offsetTop;n=n.offsetParent}
+  var hb=document.querySelector('header .r').getBoundingClientRect().bottom;
+  var max=(document.scrollingElement||document.documentElement).scrollHeight-innerHeight;
+  return Math.max(0,Math.min(max,Math.round(y-hb-14)));
+};
+window.goTo=function(target){window.scrollTo({top:window.anchorY(target),behavior:RM?'auto':'smooth'})};
 document.addEventListener('click',function(e){var a=e.target.closest('a[href^="#"]');if(!a)return;var h=a.getAttribute('href');
   e.preventDefault();closeMenu();window.goTo(h==='#'||h==='#top'?0:h);history.replaceState(null,'',h==='#top'?location.pathname:h)});
 
