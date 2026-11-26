@@ -19,7 +19,7 @@ document.querySelectorAll(".lang button").forEach(function(b){b.onclick=function
 function fit(){var g=$('giant');if(!g)return;var w=g.parentNode.clientWidth;g.style.fontSize='100px';var k=w/g.getBoundingClientRect().width*100*.995;g.style.fontSize=k+'px'}
 (function(){var g=$('giant'),t=g.textContent;g.setAttribute('aria-label',t);g.innerHTML=t.split('').map(function(c){return '<span aria-hidden="true">'+c+'</span>'}).join('');fit()})();
 window.addEventListener('resize',fit);
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){fit();window.dispatchEvent(new Event('fontsready'))});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){fit();window.dispatchEvent(new Event('resize'));window.dispatchEvent(new Event('fontsready'))});
 
 /* ---------- smooth-scroll helper (motion.js replaces it with Lenis) ---------- */
 window.goTo=function(target){var el=typeof target==='string'?document.querySelector(target):target;
@@ -128,10 +128,12 @@ document.querySelectorAll('details.case,details.more').forEach(function(d){
   var WW=0,yaw=-38*D,pitch=.6,tyaw=yaw,tp=pitch,mx=0,my=0,W=0,dpr=1,vis=true,raf=0,t0=performance.now(),drag=null,vel=0;
   var ink,mute,line,bg;function cols(){var css=getComputedStyle(document.documentElement);ink=css.getPropertyValue('--ink').trim()||'#111';mute=css.getPropertyValue('--mute').trim()||'#777';line=css.getPropertyValue('--line').trim()||'#e4e4e4';bg=css.getPropertyValue('--bg').trim()||'#fff'}cols();window.addEventListener('themechange',function(){cols();if(typeof draw==='function')try{draw(performance.now())}catch(e){}});
   var meta=document.querySelector('.h-meta'),hin=cv.parentNode;
+  var htop=document.querySelector('.h-top');
+  /* the globe takes only the free band between the name line and the role pills, with air above and below */
   function size(){dpr=Math.min(window.devicePixelRatio||1,2);
-    var mob=innerWidth<=760,top=hin.getBoundingClientRect().top+(mob?innerHeight*.06:0),avail=meta.getBoundingClientRect().top-top-(mob?12:20);
-    var w=Math.floor(Math.min(avail,mob?innerWidth:Math.min(innerWidth*.42,580)));
-    var ww=Math.min(Math.round(w*1.4),mob?innerWidth:innerWidth*.6);cv.style.display=w<190?'none':'';cv.style.width=ww+'px';cv.style.height=w+'px';W=Math.max(w,1);WW=ww;cv.width=Math.round(ww*dpr);cv.height=Math.round(W*dpr)}
+    var mob=innerWidth<=760,gap=mob?18:32,top=htop.offsetTop+htop.offsetHeight+gap,avail=meta.offsetTop-top-gap;
+    var w=Math.floor(Math.min(avail,mob?innerWidth*.86:Math.min(innerWidth*.4,560)));
+    var ww=Math.min(Math.round(w*1.4),mob?innerWidth:innerWidth*.58);cv.style.display=w<170?'none':'';cv.style.top=top+'px';cv.style.width=ww+'px';cv.style.height=w+'px';W=Math.max(w,1);WW=ww;cv.width=Math.round(ww*dpr);cv.height=Math.round(W*dpr)}
   function rot(p){var cy=Math.cos(yaw),sy=Math.sin(yaw),x=p[0]*cy+p[2]*sy,z=-p[0]*sy+p[2]*cy,cp=Math.cos(pitch),sp=Math.sin(pitch),y=p[1]*cp-z*sp;z=p[1]*sp+z*cp;return[x,y,z]}
   function ease(x){x=Math.min(1,Math.max(0,x));return 1-Math.pow(1-x,3)}
   function draw(now){

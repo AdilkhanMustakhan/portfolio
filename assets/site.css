@@ -13,7 +13,7 @@
   --pill:#f4f1ea;--pill-ink:#0c0b0b;--hbg:rgba(12,11,11,.0);
   --ease:cubic-bezier(.2,.8,.2,1);--t:.6s;
   --display:"Unbounded","Helvetica Neue",Arial,sans-serif;--body:"Manrope","Helvetica Neue",Arial,sans-serif;
-  --gut:clamp(16px,2.6vw,40px);color-scheme:dark
+  --gut:clamp(16px,2.6vw,40px);--head:96px;color-scheme:dark
 }
 html[data-theme=light]{--bg:#f2efe8;--ink:#0f0e0d;--mute:#77736b;--dim:#cfcac0;--line:#dcd7cc;--soft:#e8e4db;--ink2:#34312d;--pill:#0f0e0d;--pill-ink:#f2efe8;color-scheme:light}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -41,11 +41,10 @@ button{font:inherit;color:inherit}
 header{position:fixed;inset:0 0 auto 0;z-index:40;pointer-events:none}
 header .wrap{display:flex;justify-content:space-between;align-items:center;height:84px}
 header .l,header .r{display:flex;gap:8px;align-items:center;pointer-events:auto}
-.logo-dots{display:flex}
-.logo-dots i{width:38px;height:38px;border:1px solid var(--ink);border-radius:50%;position:relative;display:block;margin-right:-1px;background:var(--bg)}
-.logo-dots i:after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--ink);clip-path:inset(0 0 0 50%);transition:clip-path .5s var(--ease)}
-.logo-dots i+i:after{clip-path:inset(0 50% 0 0)}
-.logo:hover .logo-dots i:after{clip-path:inset(0 0 0 0)}
+.mono{width:38px;height:38px;border:1px solid var(--ink);border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:600;font-size:11px;letter-spacing:-.02em;overflow:hidden;transition:background .4s var(--ease),color .4s var(--ease)}
+.mono b{display:inline-block;font-weight:inherit;transition:transform .5s var(--ease)}
+.logo:hover .mono{background:var(--pill);color:var(--pill-ink)}
+.logo:hover .mono b:first-child{transform:translateY(-2px) rotate(-8deg)}.logo:hover .mono b:last-child{transform:translateY(2px) rotate(8deg)}
 .lang{display:inline-flex;gap:2px}
 .lang button{background:none;border:0;cursor:pointer;color:var(--mute);padding:0 2px;font-weight:600}
 .lang button.on{color:inherit}
@@ -83,7 +82,7 @@ html.pre #pre{display:block}
 #pre .num{position:absolute;right:var(--gut);bottom:28px;font-family:var(--display);font-size:13px;color:var(--mute)}
 
 /* ---------- hero ---------- */
-.hero{position:relative;min-height:100vh;min-height:100svh;display:flex;overflow:hidden}
+.hero{position:relative;min-height:max(100vh,640px);min-height:max(100svh,640px);display:flex;overflow:hidden}
 .hero-in{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:100%;padding-top:110px;padding-bottom:3vh}
 .h-top{display:flex;justify-content:space-between;align-items:flex-start;font-size:13px;color:var(--mute);position:relative;z-index:2}
 .h-top b{color:var(--ink);font-weight:600}
@@ -105,21 +104,15 @@ html.pre #pre{display:block}
 .eye{position:absolute;left:50%;top:50%;width:84px;height:84px;margin:-42px 0 0 -42px;border:1px solid var(--ink);border-radius:50%;background:var(--bg)}
 .eye i{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink)}
 #manifesto{position:relative;border:0;padding:0;min-height:0}
-#manifesto .stage{min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:7vh;padding:14vh 0 10vh}
-.mf{font-family:var(--display);text-transform:uppercase;font-weight:500;letter-spacing:-.02em;font-size:clamp(30px,6vw,96px);line-height:1.02;text-align:center;max-width:16ch;margin:0 auto;padding:0 var(--gut)}
+#manifesto .stage{height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,6vh,64px);padding:var(--head) 0 4vh;overflow:hidden}
+.mf{font-family:var(--display);text-transform:uppercase;font-weight:500;letter-spacing:-.02em;font-size:clamp(24px,min(5.8vw,7.4vh),96px);line-height:1.02;text-align:center;max-width:16ch;margin:0 auto;padding:0 var(--gut)}
 .mf .w,.scrub .w{display:inline-block;white-space:nowrap}
 .mf .c,.scrub .c{display:inline-block}
 html.m .mf .c,html.m .scrub .c{opacity:.14}
 
 /* ---------- line-art scene ---------- */
-#scene{position:relative;border:0;padding:0;min-height:0}
-#scene .stage{position:relative;height:100vh;height:100svh;overflow:hidden}
-#scene svg.art{position:absolute;inset:0;width:100%;height:100%}
 #scene svg.art path,#scene svg.art circle,#scene svg.art rect,#scene svg.art ellipse,#scene svg.art line,#scene svg.art polyline{fill:none;stroke:var(--ink);stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
 #scene svg.art .solid{fill:var(--ink);stroke:none}
-.tag{position:absolute;transform:translate(-50%,-50%);padding:10px;border:1px solid var(--ink);border-radius:99px;background:var(--bg)}
-.tag b{display:block;background:var(--pill);color:var(--pill-ink);font-family:var(--display);font-weight:500;font-size:clamp(22px,3.6vw,54px);letter-spacing:-.02em;line-height:1;padding:.32em .62em .36em;border-radius:99px;white-space:nowrap}
-.scene-cap{position:absolute;left:var(--gut);bottom:5vh;max-width:36ch;color:var(--mute);font-size:13px;font-weight:600}
 
 /* ---------- sections ---------- */
 section{position:relative;padding:16vh 0 10vh;scroll-margin-top:0}
@@ -248,12 +241,12 @@ html.tt,html.tt *{transition:background-color .35s ease,color .35s ease,border-c
   body{font-size:14px}
   header .wrap{height:68px}
   .pill{height:34px;padding:0 13px;font-size:12px}.pill.round{width:34px}
-  .logo-dots i{width:34px;height:34px}
+  .mono{width:34px;height:34px;font-size:10px}
   .logo-name,.rbtn{display:none}
   .hero-in{padding-top:86px}
   .h-meta{flex-direction:column;align-items:flex-start;gap:12px}
   .giant{letter-spacing:-.05em}
-  #globe{right:50%;transform:translateX(50%);top:12svh}
+  #globe{right:50%;translate:50% 0}
   section{padding:11vh 0 8vh}
   .stats{gap:8px}.stats>div{min-height:150px;padding:20px 18px;border-radius:22px}
   details.case summary{grid-template-columns:34px 1fr 40px;gap:10px;padding:22px 0}
@@ -265,7 +258,6 @@ html.tt,html.tt *{transition:background-color .35s ease,color .35s ease,border-c
   .gal{grid-template-columns:repeat(2,1fr);gap:8px}
   .sk{grid-template-columns:1fr;gap:28px}
   .eye{width:60px;height:60px;margin:-30px 0 0 -30px}.eye i{width:10px;height:10px;margin:-5px 0 0 -5px}
-  .tag{padding:6px}.tag b{font-size:22px}
   .talk-btn{width:130px;height:130px}
   #totop{bottom:16px;width:44px;height:44px}
 }
@@ -275,11 +267,25 @@ html.tt,html.tt *{transition:background-color .35s ease,color .35s ease,border-c
   html.m .mf .c,html.m .scrub .c{opacity:1}
   #globe{opacity:1}
 }
-.art-box{position:absolute;left:50%;top:50%;width:max(100vw,150vh);aspect-ratio:1440/900;translate:-50% -50%}
-@media(max-aspect-ratio:1/1){.art-box{width:210vw}.scene-cap{bottom:4vh;right:var(--gut)}}
 header .pill:not(.fill){background:var(--bg)}
 header .pill:not(.fill):hover{background:var(--pill)}
 html.m .xr:before,html.m details.case:after{transform:scaleX(0);transition:transform 1.4s var(--ease)}
 html.m .xr.in:before,html.m details.case.in:after{transform:none}
 #scene svg.art :is(path,rect,circle,ellipse,polyline,line){vector-effect:none;stroke-width:1.6}
 @media(max-width:760px){.mail{font-size:4.5vw;letter-spacing:-.04em}.talk{gap:28px}}
+
+/* ---------- scene v2: one screen under the header, drawings and labels never overlap ---------- */
+#scene{position:relative;border:0;padding:0;min-height:0}
+#scene .stage{position:relative;height:100vh;height:100svh;overflow:hidden;display:flex;flex-direction:column;padding:var(--head) var(--gut) 3vh}
+.scene-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.scene-head .kicker{margin:0}
+.scene-cap{color:var(--mute);font-size:13px;font-weight:600;max-width:52ch}
+.art-area{flex:1;min-height:0;position:relative;overflow:hidden}
+.art-box{position:absolute;left:50%;top:50%;translate:-50% -50%;--s:.7}
+#scene svg.art{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.tag{position:absolute;translate:-50% -50%;padding:calc(var(--s)*9px);border:1px solid var(--ink);border-radius:99px;background:var(--bg)}
+.tag b{display:block;background:var(--pill);color:var(--pill-ink);font-family:var(--display);font-weight:500;font-size:calc(var(--s)*44px);letter-spacing:-.02em;line-height:1;padding:.3em .6em .34em;border-radius:99px;white-space:nowrap}
+.tag.big b{font-size:calc(var(--s)*56px)}
+@media(max-width:760px){:root{--head:80px}.scene-cap{font-size:12px}#scene .stage{padding-bottom:2vh}}
+/* while the page is moving, rows passing under a still mouse don't light up */
+html.scrolling details.case summary{pointer-events:none}

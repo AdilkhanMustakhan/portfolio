@@ -45,7 +45,7 @@
 
     /* ---------- preloader → hero intro ---------- */
     var giantChars = document.querySelectorAll('#giant span');
-    gsap.set('#giant', { clipPath: 'inset(-10% -5% -2% -5%)' });
+    gsap.set('#giant', { clipPath: 'inset(-8% -5% 0% -5%)' });  /* letters rise in from below and leave upward through this mask */
     function intro(delay) {
       var tl = gsap.timeline({ delay: delay || 0 });
       tl.from(giantChars, { yPercent: 115, duration: 1.4, ease: EXPO, stagger: 0.05 }, 0)
@@ -78,75 +78,122 @@
       intro(0.1);
     }
 
-    /* hero drifts away as you scroll */
-    gsap.to('#giant', { yPercent: 35, opacity: 0.15, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
-    gsap.to('#globe', { y: -80, scale: 0.86, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
-
-    /* ---------- letter-by-letter "lighting up" text (manifesto + section titles) ---------- */
-    var textTriggers = [];
-    function buildText() {
-      textTriggers.forEach(function (t) { t.kill(); });
-      textTriggers = [];
-      var mf = document.querySelector('.mf'), stage = document.querySelector('#manifesto .stage');
-      var chars = split(mf);
-      var tl = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: '+=160%', scrub: 0.6, pin: true, anticipatePin: 1 } });
-      tl.fromTo(chars, { opacity: 0.14 }, { opacity: 1, stagger: 0.08, ease: 'none', duration: 0.6 }, 0)
-        .fromTo('#manifesto .eye i', { x: -18 }, { x: 18, ease: 'none', duration: tl.duration() || 1 }, 0);
-      textTriggers.push(tl.scrollTrigger);
-      document.querySelectorAll('h2.scrub').forEach(function (h) {
-        var cs = split(h);
-        var tw = gsap.fromTo(cs, { opacity: 0.14 }, { opacity: 1, stagger: 0.05, ease: 'none', scrollTrigger: { trigger: h, start: 'top 88%', end: 'top 30%', scrub: 0.5 } });
-        textTriggers.push(tw.scrollTrigger);
+    /* ---------- PORTFOLIO: letters stretch toward the cursor, scatter upward on scroll ---------- */
+    (function () {
+      var hero = document.querySelector('.hero');
+      gsap.set(giantChars, { transformOrigin: '50% 100%' });
+      gsap.to(giantChars, {
+        y: function (i) { var h = document.getElementById('giant').offsetHeight; return -h * (0.55 + ((i * 47) % 5) * 0.14); }, ease: 'none',
+        scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true }
       });
+      gsap.to('#globe', { y: -90, scale: 0.86, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
+      if (!FINE) return;
+      var qs = Array.prototype.map.call(giantChars, function (c) { return gsap.quickTo(c, 'scaleY', { duration: 0.6, ease: 'power3' }); });
+      hero.addEventListener('pointermove', function (e) {
+        giantChars.forEach(function (c, i) {
+          var r = c.getBoundingClientRect(), dx = (e.clientX - (r.left + r.width / 2)) / Math.max(r.width, 1);
+          qs[i](1 + 0.28 * Math.exp(-dx * dx * 0.9));
+        });
+      });
+      hero.addEventListener('pointerleave', function () { qs.forEach(function (q) { q(1); }); });
+    })();
+
+    /* ---------- letters light up with the scroll (manifesto pinned, section titles in flow) ----------
+       The triggers are made once; switching language only re-splits the text. */
+    function light(chars, t) {
+      var n = chars.length, k = t * (n + 6);
+      for (var i = 0; i < n; i++) chars[i].style.opacity = (0.14 + 0.86 * Math.min(1, Math.max(0, (k - i) / 6))).toFixed(3);
     }
-    buildText();
-    window.addEventListener('langchange', function () { buildText(); marqueeFit(); ScrollTrigger.refresh(); });
+    var mf = document.querySelector('.mf'), mfStage = document.querySelector('#manifesto .stage'), mfEye = mfStage.querySelector('.eye i');
+    var scrubs = [];
+    function splitAll() {
+      split(mf);
+      document.querySelectorAll('h2.scrub').forEach(function (h) { split(h); });
+      scrubs.forEach(function (s) { s.update(s.st); });
+    }
+    /* manifesto: text is fully lit at 75% of the pin, then holds still before the page moves on */
+    var mfST = ScrollTrigger.create({
+      trigger: mfStage, start: 'top top', end: '+=150%', pin: true, anticipatePin: 1,
+      onUpdate: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); gsap.set(mfEye, { x: -18 + 36 * st.progress }); },
+      onRefresh: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); }
+    });
+    scrubs.push({ st: mfST, update: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); } });
+    document.querySelectorAll('h2.scrub').forEach(function (h) {
+      var upd = function (st) { light(h.querySelectorAll('.c'), st.progress); };
+      var st = ScrollTrigger.create({ trigger: h, start: 'top 90%', end: 'top 40%', onUpdate: upd, onRefresh: upd });
+      scrubs.push({ st: st, update: upd });
+    });
+    splitAll();
+    window.addEventListener('langchange', function () { splitAll(); marqueeFit(); layoutScene(); ScrollTrigger.refresh(); });
 
     /* the line with the eye draws in, everywhere it appears */
     document.querySelectorAll('.eye-line').forEach(function (l) {
-      gsap.timeline({ scrollTrigger: { trigger: l, start: 'top 92%', end: 'top 45%', scrub: 0.6 } })
+      var inPin = !!l.closest('#manifesto');
+      gsap.timeline({ scrollTrigger: { trigger: inPin ? '#manifesto' : l, start: inPin ? 'top 85%' : 'top 92%', end: inPin ? 'top top' : 'top 45%', scrub: 0.6 } })
         .from(l, { scaleX: 0, transformOrigin: '50% 50%', ease: 'none' })
         .from(l.querySelector('.eye'), { scale: 0, rotation: -90, ease: 'back.out(1.6)' }, 0.4);
     });
 
-    /* ---------- line-art scene: drawn by the scroll ---------- */
+    /* ---------- line-art scene ----------
+       Fits one screen under the header. It starts drawing while it scrolls in (no empty screen),
+       then holds in place until every drawing and label is done, pauses, and lets go. */
+    var layoutScene;
     (function () {
-      var stage = document.querySelector('#scene .stage');
-      var box = stage.querySelector('.art-box');
-      var strokes = stage.querySelectorAll('svg.art :is(path,rect,circle,ellipse,polyline,line):not(.solid)');
-      strokes.forEach(function (s) { s.setAttribute('pathLength', '1'); s.style.strokeDasharray = '1 1'; s.style.strokeDashoffset = '1'; });
-      var dots = stage.querySelectorAll('svg.art .dot');
-      gsap.set(dots, { scale: 0, transformOrigin: '50% 50%', transformBox: 'fill-box' });
-      var rot = { t1: -7, t2: 4, t3: -4, t4: 0 };
-      function draw(sel) { return stage.querySelectorAll('svg.art ' + sel + ' :is(path,rect,circle,ellipse,polyline,line):not(.solid)'); }
+      var stage = document.querySelector('#scene .stage'), area = stage.querySelector('.art-area'), box = stage.querySelector('.art-box');
+      var tall = matchMedia('(max-aspect-ratio: 1/1)');
+      var VW = 1440, VH = 760;
+      layoutScene = function () {
+        var aw = area.clientWidth, ah = area.clientHeight, w;
+        if (tall.matches) { w = Math.min(aw * 2.05, ah * VW / VH); } else { w = Math.min(aw, ah * VW / VH); }
+        box.style.width = w + 'px'; box.style.height = (w * VH / VW) + 'px';
+        box.style.setProperty('--s', (w / VW).toFixed(4));
+      };
+      layoutScene();
+      window.addEventListener('resize', layoutScene);
+      ScrollTrigger.addEventListener('refreshInit', layoutScene);
+
+      var shapes = ':is(path,rect,circle,ellipse,polyline,line):not(.solid)';
+      stage.querySelectorAll('svg.art ' + shapes).forEach(function (s) { s.setAttribute('pathLength', '1'); s.style.strokeDasharray = '1 1'; s.style.strokeDashoffset = '1'; });
+      gsap.set(stage.querySelectorAll('svg.art .dot'), { scale: 0, transformOrigin: '50% 50%', transformBox: 'fill-box' });
+      var q = function (sel) { return stage.querySelectorAll('svg.art ' + sel); };
+      var rot = { t1: -6, t2: 3, t3: -4, t4: 0 };
+      gsap.set(stage.querySelectorAll('.tag'), { scale: 0 });
       function pop(tl, cls, at) {
-        var el = stage.querySelector('.' + cls);
-        tl.fromTo(el, { scale: 0, rotation: rot[cls] - 30 }, { scale: 1, rotation: rot[cls], duration: 0.8, ease: 'back.out(1.7)' }, at);
+        tl.fromTo(stage.querySelector('.' + cls), { scale: 0, rotation: rot[cls] - 28 }, { scale: 1, rotation: rot[cls], duration: 0.6, ease: 'back.out(1.7)' }, at);
       }
-      var tl = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: '+=320%', scrub: 0.8, pin: true, anticipatePin: 1 } });
-      tl.to(stage.querySelector('.d0'), { strokeDashoffset: 0, duration: 1.2, ease: 'none' }, 0)
-        .to(draw('.g1'), { strokeDashoffset: 0, duration: 1.2, stagger: 0.12, ease: 'power1.inOut' }, 0.6)
-        .to(stage.querySelectorAll('.g1 .dot'), { scale: 1, duration: 0.4, stagger: 0.1, ease: 'back.out(3)' }, 1.6);
-      pop(tl, 't1', 1.8);
-      tl.to(draw('.g2'), { strokeDashoffset: 0, duration: 1.2, stagger: 0.1, ease: 'power1.inOut' }, 2.6)
-        .to(stage.querySelectorAll('.g2 .dot'), { scale: 1, duration: 0.4, stagger: 0.1, ease: 'back.out(3)' }, 3.5);
-      pop(tl, 't2', 3.7);
-      tl.to(draw('.g3'), { strokeDashoffset: 0, duration: 1.2, stagger: 0.1, ease: 'power1.inOut' }, 4.5);
-      pop(tl, 't3', 5.6);
-      tl.to(draw('.g4'), { strokeDashoffset: 0, duration: 0.8, stagger: 0.1, ease: 'power1.inOut' }, 6.4)
-        .to(stage.querySelectorAll('.g4 .dot'), { scale: 1, duration: 0.4, ease: 'back.out(3)' }, 7);
-      pop(tl, 't4', 7.1);
-      tl.from(stage.querySelector('.scene-cap'), { opacity: 0, y: 20, duration: 0.6 }, 7.4)
-        .to({}, { duration: 0.6 });
-      /* on tall (phone) screens the "camera" pans from one drawing to the next */
-      var mm = gsap.matchMedia();
-      mm.add('(max-aspect-ratio: 1/1)', function () {
+      /* 1) while the section scrolls into view: base line, axis and bars */
+      gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top 75%', end: 'top top', scrub: 0.6 } })
+        .to(q('.d0'), { strokeDashoffset: 0, duration: 1, ease: 'none' }, 0)
+        .to(q('.g1 :is(rect,path)'), { strokeDashoffset: 0, duration: 0.8, stagger: 0.08, ease: 'power1.inOut' }, 0.3);
+      /* 2) pinned: the rest, one idea at a time */
+      var tl = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: '+=230%', scrub: 0.7, pin: true, anticipatePin: 1 } });
+      tl.to(q('.g1 polyline'), { strokeDashoffset: 0, duration: 0.6, ease: 'power1.inOut' }, 0)
+        .to(q('.g1 .dot'), { scale: 1, duration: 0.3, stagger: 0.07, ease: 'back.out(3)' }, 0.2);
+      pop(tl, 't1', 0.6);
+      tl.to(q('.g2 ' + shapes), { strokeDashoffset: 0, duration: 1, stagger: 0.07, ease: 'power1.inOut' }, 1.2)
+        .to(q('.g2 .dot'), { scale: 1, duration: 0.3, stagger: 0.1, ease: 'back.out(3)' }, 2.0);
+      pop(tl, 't2', 2.2);
+      tl.to(q('.g3 ' + shapes), { strokeDashoffset: 0, duration: 1, stagger: 0.07, ease: 'power1.inOut' }, 2.8);
+      pop(tl, 't3', 3.8);
+      tl.to(q('.g4 ' + shapes), { strokeDashoffset: 0, duration: 0.7, stagger: 0.1, ease: 'power1.inOut' }, 4.4);
+      pop(tl, 't4', 5.0);
+      tl.to({}, { duration: 1.0 });          /* hold: everything is visible before the page moves on */
+      /* tall phone screens: the "camera" moves from one drawing to the next */
+      gsap.matchMedia().add('(max-aspect-ratio: 1/1)', function () {
         var w = function () { return box.offsetWidth; };
-        tl.fromTo(box, { x: function () { return w() * 0.29; } }, { x: 0, duration: 2.4, ease: 'power2.inOut' }, 1.9)
-          .to(box, { x: function () { return -w() * 0.3; }, duration: 2.2, ease: 'power2.inOut' }, 4.1)
-          .to(box, { x: 0, duration: 1.2, ease: 'power2.inOut' }, 6.2);
+        gsap.set(box, { x: function () { return w() * 0.255; } });
+        tl.to(box, { x: 0, duration: 0.8, ease: 'power2.inOut' }, 1.0)
+          .to(box, { x: function () { return -w() * 0.3; }, duration: 0.8, ease: 'power2.inOut' }, 2.6)
+          .to(box, { x: 0, duration: 0.8, ease: 'power2.inOut' }, 4.3);
         return function () { gsap.set(box, { x: 0 }); };
       });
+    })();
+
+    /* rows passing under a still mouse don't light up while the page is moving */
+    (function () {
+      var t = 0;
+      function mark() { html.classList.add('scrolling'); clearTimeout(t); t = setTimeout(function () { html.classList.remove('scrolling'); }, 160); }
+      if (lenis) lenis.on('scroll', mark); else window.addEventListener('scroll', mark, { passive: true });
     })();
 
     /* ---------- blocks rise in as they enter ---------- */
@@ -191,18 +238,13 @@
       }
     });
 
-    /* ---------- cursor dot, magnetic pills, logo eyes (mouse only) ---------- */
+    /* ---------- cursor dot and magnetic pills (mouse only) ---------- */
     if (FINE) {
       html.classList.add('cur');
       var cur = document.getElementById('cur'), lab = cur.querySelector('span');
       var qx = gsap.quickTo(cur, 'x', { duration: 0.35, ease: 'power3' }), qy = gsap.quickTo(cur, 'y', { duration: 0.35, ease: 'power3' });
-      var eyes = document.querySelectorAll('.logo-dots i');
       window.addEventListener('pointermove', function (e) {
         qx(e.clientX); qy(e.clientY);
-        eyes.forEach(function (i) {
-          var r = i.getBoundingClientRect(), a = Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
-          gsap.to(i, { rotation: a, duration: 0.5, ease: 'power3' });
-        });
       }, { passive: true });
       var state = '', last = null;
       document.addEventListener('pointerover', function (e) { last = e.target; look(e.target); });
