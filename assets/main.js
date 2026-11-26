@@ -131,7 +131,9 @@ document.querySelectorAll('details.case,details.more').forEach(function(d){
   var htop=document.querySelector('.h-top');
   /* the globe takes only the free band between the name line and the role pills, with air above and below */
   function size(){dpr=Math.min(window.devicePixelRatio||1,2);
-    var mob=innerWidth<=760,gap=mob?18:32,top=htop.offsetTop+htop.offsetHeight+gap,avail=meta.offsetTop-top-gap;
+    var mob=innerWidth<=760,gap=mob?18:28,
+      /* desktop: the globe sits on the right, beside the name line, from under the header down to the role pills */
+      top=mob?htop.offsetTop+htop.offsetHeight+gap:Math.max(16,htop.offsetTop-12),avail=meta.offsetTop-top-gap;
     var w=Math.floor(Math.min(avail,mob?innerWidth*.86:Math.min(innerWidth*.4,560)));
     var ww=Math.min(Math.round(w*1.4),mob?innerWidth:innerWidth*.58);cv.style.display=w<170?'none':'';cv.style.top=top+'px';cv.style.width=ww+'px';cv.style.height=w+'px';W=Math.max(w,1);WW=ww;cv.width=Math.round(ww*dpr);cv.height=Math.round(W*dpr)}
   function rot(p){var cy=Math.cos(yaw),sy=Math.sin(yaw),x=p[0]*cy+p[2]*sy,z=-p[0]*sy+p[2]*cy,cp=Math.cos(pitch),sp=Math.sin(pitch),y=p[1]*cp-z*sp;z=p[1]*sp+z*cp;return[x,y,z]}

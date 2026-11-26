@@ -82,7 +82,7 @@ html.pre #pre{display:block}
 #pre .num{position:absolute;right:var(--gut);bottom:28px;font-family:var(--display);font-size:13px;color:var(--mute)}
 
 /* ---------- hero ---------- */
-.hero{position:relative;min-height:max(100vh,640px);min-height:max(100svh,640px);display:flex;overflow:hidden}
+.hero{position:relative;min-height:max(100vh,420px);min-height:max(100svh,420px);display:flex;overflow:hidden}
 .hero-in{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:100%;padding-top:110px;padding-bottom:3vh}
 .h-top{display:flex;justify-content:space-between;align-items:flex-start;font-size:13px;color:var(--mute);position:relative;z-index:2}
 .h-top b{color:var(--ink);font-weight:600}
