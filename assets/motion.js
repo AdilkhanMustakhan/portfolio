@@ -89,13 +89,14 @@
       gsap.to('#globe', { y: -90, scale: 0.86, ease: 'none', scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true } });
       if (!FINE) return;
       var qs = Array.prototype.map.call(giantChars, function (c) { return gsap.quickTo(c, 'scaleY', { duration: 0.6, ease: 'power3' }); });
-      hero.addEventListener('pointermove', function (e) {
+      var giant = document.getElementById('giant');   /* only while the mouse is over the letters themselves */
+      giant.addEventListener('pointermove', function (e) {
         giantChars.forEach(function (c, i) {
           var r = c.getBoundingClientRect(), dx = (e.clientX - (r.left + r.width / 2)) / Math.max(r.width, 1);
           qs[i](1 + 0.28 * Math.exp(-dx * dx * 0.9));
         });
       });
-      hero.addEventListener('pointerleave', function () { qs.forEach(function (q) { q(1); }); });
+      giant.addEventListener('pointerleave', function () { qs.forEach(function (q) { q(1); }); });
     })();
 
     /* ---------- letters light up with the scroll (manifesto pinned, section titles in flow) ----------
