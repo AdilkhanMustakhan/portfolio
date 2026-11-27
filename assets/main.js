@@ -24,10 +24,12 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){fit
 /* ---------- smooth-scroll helper (motion.js replaces it with Lenis) ---------- */
 /* A section link stops with the section's label pill just under the header pills, every time.
    offsetTop is used (not getBoundingClientRect) so a label still mid-animation doesn't shift the stop. */
+/* page position of an element in normal flow; a section that is pinned right now is measured by its placeholder */
+window.absTop=function(el){var y=0,n=el;while(n){if(n.style&&n.style.position==='fixed'&&n.parentNode&&n.parentNode.classList&&n.parentNode.classList.contains('pin-spacer'))n=n.parentNode;y+=n.offsetTop;n=n.offsetParent}return y};
 window.anchorY=function(target){
   if(target===0||target==null)return 0;
   var el=typeof target==='string'?document.querySelector(target):target;if(!el)return 0;
-  var a=el.querySelector('.kicker')||el,y=0,n=a;while(n){y+=n.offsetTop;n=n.offsetParent}
+  var a=el.querySelector('.kicker')||el,y=window.absTop(a);
   var hb=document.querySelector('header .r').getBoundingClientRect().bottom;
   var max=(document.scrollingElement||document.documentElement).scrollHeight-innerHeight;
   return Math.max(0,Math.min(max,Math.round(y-hb-14)));

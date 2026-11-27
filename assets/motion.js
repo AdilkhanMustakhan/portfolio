@@ -112,13 +112,27 @@
       document.querySelectorAll('h2.scrub').forEach(function (h) { split(h); });
       scrubs.forEach(function (s) { s.update(s.st); });
     }
-    /* manifesto: text is fully lit at 75% of the pin, then holds still before the page moves on */
+    /* manifesto: the text lights up during the first half of the pin, holds, then a circle grows out of
+       the eye (where the ball sits) and swallows the screen in the next chapter's colour */
+    var circle = mfStage.querySelector('.mf-circle'), mfEyeEl = mfStage.querySelector('.eye');
+    function placeCircle() {
+      var sr = mfStage.getBoundingClientRect(), er = mfEyeEl.getBoundingClientRect();
+      var cx = er.left + er.width / 2 - sr.left, cy = er.top + er.height / 2 - sr.top;
+      var R = Math.max(Math.hypot(cx, cy), Math.hypot(sr.width - cx, cy), Math.hypot(cx, sr.height - cy), Math.hypot(sr.width - cx, sr.height - cy));
+      gsap.set(circle, { left: cx, top: cy, width: 2 * R + 4, height: 2 * R + 4, marginLeft: -R - 2, marginTop: -R - 2 });
+    }
+    var ease2 = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+    function mfUpdate(st) {
+      var p = st.progress;
+      /* 0–33% letters light up · 37–64% the circle grows · last screen: the scene slides up over it */
+      light(mf.querySelectorAll('.c'), Math.min(1, p / 0.33));
+      gsap.set(circle, { scale: ease2(Math.min(1, Math.max(0, (p - 0.37) / 0.27))) });
+    }
     var mfST = ScrollTrigger.create({
-      trigger: mfStage, start: 'top top', end: '+=150%', pin: true, anticipatePin: 1,
-      onUpdate: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); },
-      onRefresh: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); }
+      trigger: mfStage, start: 'top top', end: '+=280%', pin: true, anticipatePin: 1, refreshPriority: 10,
+      onUpdate: mfUpdate, onRefresh: function (st) { placeCircle(); mfUpdate(st); }
     });
-    scrubs.push({ st: mfST, update: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); } });
+    scrubs.push({ st: mfST, update: mfUpdate });
     document.querySelectorAll('h2.scrub').forEach(function (h) {
       var upd = function (st) { light(h.querySelectorAll('.c'), st.progress); };
       var st = ScrollTrigger.create({ trigger: h, start: 'top 90%', end: 'top 40%', onUpdate: upd, onRefresh: upd });
@@ -163,11 +177,11 @@
         tl.fromTo(stage.querySelector('.' + cls), { scale: 0, rotation: rot[cls] - 28 }, { scale: 1, rotation: rot[cls], duration: 0.6, ease: 'back.out(1.7)' }, at);
       }
       /* 1) while the section scrolls into view: base line, axis and bars */
-      gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top 75%', end: 'top top', scrub: 0.6 } })
+      gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top bottom', end: 'top top', scrub: 0.6 } })
         .to(q('.d0'), { strokeDashoffset: 0, duration: 1, ease: 'none' }, 0)
         .to(q('.g1 :is(rect,path)'), { strokeDashoffset: 0, duration: 0.8, stagger: 0.08, ease: 'power1.inOut' }, 0.3);
       /* 2) pinned: the rest, one idea at a time */
-      var tl = sceneTL = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: '+=230%', scrub: 0.7, pin: true, anticipatePin: 1 } });
+      var tl = sceneTL = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: '+=280%', scrub: 0.7, pin: true, anticipatePin: 1, refreshPriority: 9 } });
       tl.to(q('.g1 polyline'), { strokeDashoffset: 0, duration: 0.6, ease: 'power1.inOut' }, 0)
         .to(q('.g1 .dot'), { scale: 1, duration: 0.3, stagger: 0.07, ease: 'back.out(3)' }, 0.2);
       pop(tl, 't1', 0.6);
@@ -178,7 +192,10 @@
       pop(tl, 't3', 3.8);
       tl.to(q('.g4 ' + shapes), { strokeDashoffset: 0, duration: 0.7, stagger: 0.1, ease: 'power1.inOut' }, 4.4);
       pop(tl, 't4', 5.0);
-      tl.to({}, { duration: 1.0 });          /* hold: everything is visible before the page moves on */
+      tl.to({}, { duration: 0.7 });          /* hold: everything is visible… */
+      /* …then a panel sweeps in from the right and wipes the scene away */
+      tl.fromTo(stage.querySelector('.wipe'), { xPercent: 101 }, { xPercent: 0, duration: 1.1, ease: 'power3.inOut' }, 6.3)
+        .to({}, { duration: 0.2 });
       /* tall phone screens: the "camera" moves from one drawing to the next */
       gsap.matchMedia().add('(max-aspect-ratio: 1/1)', function () {
         var w = function () { return box.offsetWidth; };
@@ -212,7 +229,6 @@
       var gutEl = document.querySelector('#work .wrap'), mg = 18;
       var margin = function () { return mg; };
       function measureMargin() { mg = Math.max(8, (parseFloat(getComputedStyle(gutEl).paddingLeft) || 20) * 0.45); }
-      function absTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
       /* where a stop sits on screen right now */
       function pos(st) {
         var r = st.el.getBoundingClientRect();
@@ -225,13 +241,12 @@
         measureMargin(); stops = [];
         add(document.getElementById('globe'), { at: 0 });
         var eye = document.querySelector('#manifesto .eye');
-        add(eye, { st: mfST, f: 0, eye: 1 }); add(eye, { st: mfST, f: 0.82, eye: 1 });
-        add(eye, { st: mfST, f: 1, side: 1 });                       /* rolls out along the eye's own line to the margin */
+        add(eye, { st: mfST, f: 0, eye: 1 }); add(eye, { st: mfST, f: 0.64, eye: 1 });   /* stays in the eye while the circle grows out of it */
         var sc = sceneTL.scrollTrigger, t1 = document.querySelector('#scene .t1');
         add(document.querySelector('#scene .kicker'), { st: sc, f: 0, side: 1, node: 1 });
         add(t1, { st: sc, f: 0.5 / D, side: 1 });                    /* down the margin to the label row… */
         [['t1', 0.6], ['t2', 2.2], ['t3', 3.8], ['t4', 5.0]].forEach(function (t) { add(document.querySelector('#scene .' + t[0]), { st: sc, f: (t[1] + 0.35) / D, ax: 0 }); });   /* the ball docks on each label's edge, never on its text */
-        add(document.querySelector('#scene .t4'), { st: sc, f: 1, ax: 0 });
+        add(document.querySelector('#scene .t4'), { st: sc, f: 6.2 / D, ax: 0 });
         add(document.querySelector('#work .kicker'), { side: 1, node: 1 });
         document.querySelectorAll('#work .stats > div:first-child, details.case > summary').forEach(function (e) { add(e, { side: 1, node: 1 }); });
         add(document.querySelector('.marquee'), { side: 1 });
@@ -250,7 +265,7 @@
           if (st.at === 0) s = 0;
           else if (st.st) s = st.st.start + st.f * (st.st.end - st.st.start);
           else if (st.last) s = max;
-          else s = absTop(st.el) + st.el.offsetHeight / 2 - f;
+          else s = window.absTop(st.el) + st.el.offsetHeight / 2 - f;
           s = Math.min(max, Math.max(s, prev + 30));
           st.s = s; prev = s;
         });
@@ -275,7 +290,7 @@
         var a = stops[i], b = stops[Math.min(i + 1, stops.length - 1)];
         var t = b === a ? 0 : Math.min(1, Math.max(0, (y - a.s) / (b.s - a.s)));
         t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;     /* ease in-out between stops */
-        var lo = Math.max(0, i - 6), hi = Math.min(stops.length - 1, i + 7), P = [];
+        var lo = Math.max(0, i - 1), hi = Math.min(stops.length - 1, i + 4), P = [];   /* only the stretch around the ball: no stray old lines over new chapters */
         for (var k = lo; k <= hi; k++) P[k] = pos(stops[k]);
         var d = '', dl = '';
         for (k = lo; k < hi; k++) { var c = curve(P[k], P[k + 1]); d += D2(c); if (k < i) dl += D2(c); }
@@ -300,20 +315,57 @@
       gsap.ticker.add(frame);
     })();
 
+    /* ---------- tilted word bands: three huge words sweep across in opposite directions ---------- */
+    function fillBands() {
+      document.querySelectorAll('#bands .row').forEach(function (r) {
+        var t = r.getAttribute('data-' + (html.lang === 'ru' ? 'ru' : 'en')).replace(/&amp;/g, '&');
+        r.innerHTML = new Array(5).join('<span>' + t.replace(/&/g, '&amp;') + '</span>');
+      });
+    }
+    fillBands();
+    window.addEventListener('langchange', fillBands);
+    var bandsST = { trigger: '#bands', start: 'top top', endTrigger: '#work', end: 'top top', scrub: 0.6 };
+    ScrollTrigger.create({ trigger: '#bands', start: 'top top', endTrigger: '#work', end: 'top top', pin: true, pinSpacing: false, refreshPriority: 8 });
+    gsap.fromTo('#bands .b1 .row', { xPercent: 0 }, { xPercent: -22, ease: 'none', scrollTrigger: Object.assign({}, bandsST, { start: 'top bottom' }) });
+    gsap.fromTo('#bands .b2 .row', { xPercent: -24 }, { xPercent: 0, ease: 'none', scrollTrigger: Object.assign({}, bandsST, { start: 'top bottom' }) });
+    gsap.fromTo('#bands .b3 .row', { xPercent: -4 }, { xPercent: -26, ease: 'none', scrollTrigger: Object.assign({}, bandsST, { start: 'top bottom' }) });
+    gsap.fromTo('#bands .band', { scale: 1.15 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: '#bands', start: 'top bottom', end: 'top top', scrub: 0.6 } });
+
+    /* ---------- stacked sheets: each chapter slides up over the previous one, which stays and dims ---------- */
+    var sheets = ['#bands', '#work', '#skills', '#experience'].map(function (q) { return document.querySelector(q); });
+    sheets.forEach(function (sh, i) {
+      var next = sheets[i + 1] || document.getElementById('contact');
+      if (i > 0) ScrollTrigger.create({
+        trigger: sh, pin: true, pinSpacing: false, refreshPriority: 8 - i,
+        start: function () { return sh.offsetHeight > innerHeight ? 'bottom bottom' : 'top top'; },
+        endTrigger: next, end: 'top top'
+      });
+      if (sh.classList.contains('sheet')) gsap.fromTo(sh, { '--dim': 0 }, { '--dim': 0.6, ease: 'none', scrollTrigger: { trigger: next, start: 'top bottom', end: 'top top', scrub: true } });
+    });
+    /* the closing chapter wipes in from the left */
+    gsap.fromTo('#contact', { clipPath: 'inset(0% 100% 0% 0% round 0px 44px 44px 0px)' }, { clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)', ease: 'none',
+      scrollTrigger: { trigger: '#contact', start: 'top bottom', end: 'top 10%', scrub: 0.4 } });
+    /* stat circles drift sideways while they pass */
+    gsap.matchMedia().add('(min-width: 761px)', function () {
+      gsap.fromTo('#work .stats', { x: function () { return innerWidth * 0.07; } }, { x: function () { return -innerWidth * 0.05; }, ease: 'none',
+        scrollTrigger: { trigger: '#work .stats', start: 'top bottom', end: 'bottom top', scrub: 0.5 } });
+    });
+
     /* ---------- blocks rise in as they enter ---------- */
     gsap.utils.toArray('.kicker, .lead, .stats > div, .xp h3, .certs, .earlier, details.more, .talk, .links .pill, .sk h3').forEach(function (el) {
       gsap.from(el, { y: 50, opacity: 0, duration: 1.2, ease: EXPO, scrollTrigger: { trigger: el, start: 'top 92%', once: true } });
     });
-    ScrollTrigger.batch('details.case, .xr', {
+    ScrollTrigger.batch('details.case', {
       start: 'top 94%', once: true,
-      onEnter: function (els) {
-        els.forEach(function (e) { e.classList.add('in'); });
-        gsap.from(els, { y: 40, opacity: 0, duration: 1.1, ease: EXPO, stagger: 0.07 });
-      }
+      onEnter: function (els) { els.forEach(function (e) { e.classList.add('in'); }); gsap.from(els, { y: 40, opacity: 0, duration: 1.1, ease: EXPO, stagger: 0.07 }); }
     });
-    ScrollTrigger.batch('.sk li', {
+    ScrollTrigger.batch('.xr', {           /* job rows slide in from the left, along the timeline */
+      start: 'top 94%', once: true,
+      onEnter: function (els) { els.forEach(function (e) { e.classList.add('in'); }); gsap.from(els, { x: -90, opacity: 0, duration: 1.1, ease: EXPO, stagger: 0.08 }); }
+    });
+    ScrollTrigger.batch('.sk li', {        /* skill pills fly in from the right */
       start: 'top 95%', once: true,
-      onEnter: function (els) { gsap.from(els, { y: 24, scale: 0.7, opacity: 0, duration: 0.8, ease: 'back.out(1.8)', stagger: 0.03 }); }
+      onEnter: function (els) { gsap.from(els, { x: 70, rotation: 6, opacity: 0, duration: 0.9, ease: EXPO, stagger: 0.025 }); }
     });
     /* case images unmask when a project opens */
     window.addEventListener('caseopen', function (e) {
