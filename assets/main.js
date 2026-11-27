@@ -47,12 +47,13 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu()}
 /* ---------- theme ---------- */
 (function(){
   var b=$('thm'),r=document.documentElement;
-  b.addEventListener('click',function(){
+  function toggle(){
     var t=r.getAttribute('data-theme')==='light'?'dark':'light';
     r.classList.add('tt');r.setAttribute('data-theme',t);try{localStorage.setItem('theme',t)}catch(e){}
     document.querySelector('meta[name=theme-color]').setAttribute('content',t==='light'?'#f2efe8':'#0c0b0b');
     window.dispatchEvent(new Event('themechange'));setTimeout(function(){r.classList.remove('tt')},400);
-  });
+  }
+  b.addEventListener('click',toggle);var b2=$('thm2');if(b2)b2.addEventListener('click',toggle);
 })();
 
 /* ---------- résumé pill in header: hidden while the hero's own button is on screen ---------- */

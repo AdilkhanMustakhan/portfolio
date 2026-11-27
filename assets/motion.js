@@ -128,20 +128,21 @@
     }
     var ease2 = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
     var clamp01 = function (v) { return Math.min(1, Math.max(0, v)); };
-    /* pin = 300% of the screen: 0–42% text rises and leaves · 45–64% circle grows · last screen: next chapter slides over */
+    /* pin = 300% of the screen:
+       0–30%  the text stands in the middle and lights up letter by letter
+       33–48% once fully lit, it slides up and disappears under the line (the eye watches it go)
+       50–66% the pupil grows into a circle that becomes the next chapter · last screen: that chapter slides over */
+    var mfLook = 0;
     function mfUpdate(st) {
       var p = st.progress, cs = mf.querySelectorAll('.c');
       if (cs.length !== charTops.length) measureMf();
-      var tp = clamp01(p / 0.42), y0 = maskH * 0.62, y = y0 - tp * (y0 + textH + 16);   /* starts in the lower part of the screen, so it shows up with the line */
+      light(cs, clamp01(p / 0.3));
+      var ex = ease2(clamp01((p - 0.33) / 0.15)), y0 = Math.max(0, (maskH - textH) / 2), y = y0 - ex * (y0 + textH + 16);
       gsap.set(mf, { y: y });
-      for (var i = 0; i < cs.length; i++) {          /* a line is grey at the bottom and fully lit by the upper part */
-        var cy = y + charTops[i];
-        cs[i].style.opacity = (0.14 + 0.86 * clamp01((maskH * 0.92 - cy) / (maskH * 0.5))).toFixed(3);
-      }
-      gsap.set(pupil, { x: -16 + 32 * tp });          /* the pupil follows the reading */
-      var cp = clamp01((p - 0.45) / 0.19);
+      mfLook = ex;
+      var cp = clamp01((p - 0.5) / 0.16);
       gsap.set(circle, { scale: ease2(cp) });
-      pupil.style.opacity = cp > 0 ? 0 : 1;
+      pupil.style.opacity = cp > 0.02 ? 0 : 1;
     }
     var mfST = ScrollTrigger.create({
       trigger: mfStage, start: 'top top', end: '+=300%', pin: true, anticipatePin: 1, refreshPriority: 10,
@@ -168,6 +169,39 @@
         .from(l, { scaleX: 0, transformOrigin: '50% 50%', ease: 'none' })
         .from(l.querySelector('.eye'), { scale: 0, rotation: -90, ease: 'back.out(1.6)' }, 0.4);
     });
+
+
+    /* ---------- eyes that look at you: the two in the logo and the big one on the line ---------- */
+    (function () {
+      var logo = Array.prototype.map.call(document.querySelectorAll('.eye2'), function (e) {
+        return { el: e, ball: e.querySelector('i'), pupil: e.querySelector('b'), bx: gsap.quickTo(e.querySelector('i'), 'x', { duration: 0.4, ease: 'power3' }), by: gsap.quickTo(e.querySelector('i'), 'y', { duration: 0.4, ease: 'power3' }), px: gsap.quickTo(e.querySelector('b'), 'x', { duration: 0.3, ease: 'power3' }), py: gsap.quickTo(e.querySelector('b'), 'y', { duration: 0.3, ease: 'power3' }) };
+      });
+      var big = { el: mfEyeEl, px: gsap.quickTo(pupil, 'x', { duration: 0.5, ease: 'power3' }), py: gsap.quickTo(pupil, 'y', { duration: 0.5, ease: 'power3' }) };
+      var mx = innerWidth / 2, my = innerHeight / 2, has = false;
+      function look() {
+        logo.forEach(function (e) {
+          var r = e.el.getBoundingClientRect(), dx = mx - (r.left + r.width / 2), dy = my - (r.top + r.height / 2), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 160);
+          e.bx(dx / d * 3 * k); e.by(dy / d * 3 * k); e.px(dx / d * 7 * k); e.py(dy / d * 7 * k);
+        });
+        var r = big.el.getBoundingClientRect();
+        if (mfLook > 0.01) { big.px(0); big.py(-26 * Math.min(1, mfLook * 3)); return; }      /* watches the text leave */
+        var dx = mx - (r.left + r.width / 2), dy = my - (r.top + r.height / 2), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 240);
+        big.px(dx / d * 24 * k); big.py(dy / d * 24 * k);
+      }
+      window.addEventListener('pointermove', function (e) { if (e.pointerType === 'touch') return; mx = e.clientX; my = e.clientY; has = true; look(); }, { passive: true });
+      /* on phones (no mouse) the eyes glance the way the page is moving */
+      var lastY = 0;
+      gsap.ticker.add(function () {
+        var y = lenis ? lenis.scroll : scrollY, v = y - lastY; lastY = y;
+        if (!has) { my = innerHeight / 2 + Math.max(-1, Math.min(1, v / 20)) * innerHeight; mx = innerWidth / 2; }
+        look();
+      });
+      /* blink now and then */
+      (function blink() {
+        gsap.to(logo.map(function (e) { return e.ball; }), { scaleY: 0.08, duration: 0.09, yoyo: true, repeat: 1, ease: 'power2.in' });
+        gsap.delayedCall(2.5 + Math.random() * 4, blink);
+      })();
+    })();
 
     /* ---------- line-art scene ----------
        Fits one screen under the header. It starts drawing while it scrolls in (no empty screen),
@@ -340,7 +374,7 @@
       document.addEventListener('pointerleave', function () { gsap.to(cur, { opacity: 0, duration: 0.2 }); });
       document.addEventListener('pointerenter', function () { gsap.to(cur, { opacity: 1, duration: 0.2 }); });
 
-      document.querySelectorAll('.pill, .talk-btn, .logo').forEach(function (el) {
+      document.querySelectorAll('.pill, .talk-btn, .eyes').forEach(function (el) {
         var big = el.classList.contains('talk-btn'), k = big ? 0.35 : 0.25;
         var mx, my, back;   /* created on first hover and never "overwrite", so they can't cut the intro short */
         el.addEventListener('pointermove', function (e) {

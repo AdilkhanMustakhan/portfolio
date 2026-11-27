@@ -42,10 +42,6 @@ button{font:inherit;color:inherit}
 header{position:fixed;inset:0 0 auto 0;z-index:40;pointer-events:none}
 header .wrap{display:flex;justify-content:space-between;align-items:center;height:84px}
 header .l,header .r{display:flex;gap:8px;align-items:center;pointer-events:auto}
-.mono{width:38px;height:38px;border:1px solid var(--ink);border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:-.02em;overflow:hidden;transition:background .4s var(--ease),color .4s var(--ease)}
-.mono b{display:inline-block;font-weight:inherit;transition:transform .5s var(--ease)}
-.logo:hover .mono{background:var(--pill);color:var(--pill-ink)}
-.logo:hover .mono b:first-child{transform:translateY(-2px) rotate(-8deg)}.logo:hover .mono b:last-child{transform:translateY(2px) rotate(8deg)}
 .lang{display:inline-flex;gap:2px}
 .lang button{background:none;border:0;cursor:pointer;color:var(--mute);padding:0 2px;font-weight:600}
 .lang button.on{color:inherit}
@@ -242,8 +238,9 @@ html.tt,html.tt *{transition:background-color .35s ease,color .35s ease,border-c
   body{font-size:14px}
   header .wrap{height:68px}
   .pill{height:34px;padding:0 13px;font-size:12px}.pill.round{width:34px}
-  .mono{width:34px;height:34px;font-size:10px}
-  .logo-name,.rbtn{display:none}
+  .rbtn,#thm{display:none}
+  .eye2{width:34px;height:34px}.eye2 i{width:23px;height:23px}
+  .logo-name{padding:0 11px;font-size:11.5px}
   .hero-in{padding-top:86px}
   .h-meta{flex-direction:column;align-items:flex-start;gap:12px}
   .giant{letter-spacing:-.05em}
@@ -356,3 +353,21 @@ html.m #manifesto .eye-line{position:absolute;left:0;right:0;top:var(--ly);z-ind
 html.m .mf-mask{position:absolute;left:0;right:0;top:var(--ly);bottom:0;overflow:hidden;z-index:1}
 html.m .mf{position:absolute;left:0;right:0;top:0;will-change:transform;transform:translateY(120vh)}
 .mf-circle{z-index:4}
+
+/* ---------- logo: two cartoon eyes (as on motion.zajno) + the name, which opens an email ---------- */
+.eyes{display:flex}
+.eye2{width:38px;height:38px;border:1px solid var(--ink);border-radius:50%;background:var(--bg);display:grid;place-items:center;margin-right:-1px}
+.eye2 i{position:relative;display:block;width:26px;height:26px;border-radius:50%;background:var(--ink);overflow:hidden}
+.eye2 b{position:absolute;left:50%;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--bg)}
+.roll{display:inline-grid;height:1.25em;line-height:1.25em;overflow:hidden}
+.roll>span{grid-area:1/1;transition:transform .5s var(--ease);text-align:center}
+.roll>span+span{transform:translateY(105%)}
+.logo-name:hover .roll>span:first-child,.logo-name:focus-visible .roll>span:first-child{transform:translateY(-105%)}
+.logo-name:hover .roll>span+span,.logo-name:focus-visible .roll>span+span{transform:none}
+.thm-m{display:none}
+@media(max-width:760px){.thm-m{display:inline-flex}}
+@media(max-width:760px){
+  /* phones: the language pill shows only the language it switches to; the menu is a round button */
+  .lang{padding:0;width:34px;justify-content:center}.lang .sl,.lang button.on{display:none}.lang button{color:inherit!important;opacity:1!important;width:100%;height:100%}
+  #mbtn{width:34px;padding:0;justify-content:center}#mbtn .mt{display:none}#mbtn .burger{margin:0}
+}
