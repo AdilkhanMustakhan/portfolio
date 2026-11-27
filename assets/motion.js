@@ -115,7 +115,7 @@
     /* manifesto: text is fully lit at 75% of the pin, then holds still before the page moves on */
     var mfST = ScrollTrigger.create({
       trigger: mfStage, start: 'top top', end: '+=150%', pin: true, anticipatePin: 1,
-      onUpdate: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); gsap.set(mfEye, { x: -18 + 36 * st.progress }); },
+      onUpdate: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); },
       onRefresh: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); }
     });
     scrubs.push({ st: mfST, update: function (st) { light(mf.querySelectorAll('.c'), Math.min(1, st.progress / 0.75)); } });
@@ -138,7 +138,7 @@
     /* ---------- line-art scene ----------
        Fits one screen under the header. It starts drawing while it scrolls in (no empty screen),
        then holds in place until every drawing and label is done, pauses, and lets go. */
-    var layoutScene;
+    var layoutScene, sceneTL;
     (function () {
       var stage = document.querySelector('#scene .stage'), area = stage.querySelector('.art-area'), box = stage.querySelector('.art-box');
       var tall = matchMedia('(max-aspect-ratio: 1/1)');
@@ -167,7 +167,7 @@
         .to(q('.d0'), { strokeDashoffset: 0, duration: 1, ease: 'none' }, 0)
         .to(q('.g1 :is(rect,path)'), { strokeDashoffset: 0, duration: 0.8, stagger: 0.08, ease: 'power1.inOut' }, 0.3);
       /* 2) pinned: the rest, one idea at a time */
-      var tl = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: '+=230%', scrub: 0.7, pin: true, anticipatePin: 1 } });
+      var tl = sceneTL = gsap.timeline({ scrollTrigger: { trigger: stage, start: 'top top', end: '+=230%', scrub: 0.7, pin: true, anticipatePin: 1 } });
       tl.to(q('.g1 polyline'), { strokeDashoffset: 0, duration: 0.6, ease: 'power1.inOut' }, 0)
         .to(q('.g1 .dot'), { scale: 1, duration: 0.3, stagger: 0.07, ease: 'back.out(3)' }, 0.2);
       pop(tl, 't1', 0.6);
@@ -195,6 +195,109 @@
       var t = 0;
       function mark() { html.classList.add('scrolling'); clearTimeout(t); t = setTimeout(function () { html.classList.remove('scrolling'); }, 160); }
       if (lenis) lenis.on('scroll', mark); else window.addEventListener('scroll', mark, { passive: true });
+    })();
+
+    /* ---------- the thread: one line and one ball that run through the whole site ----------
+       Stops are real elements, in reading order. Each stop owns a scroll position: for elements in
+       normal flow, the moment they reach the focus line; inside pinned scenes, a point of the pin's
+       progress. Between two stops the ball travels along an S-curve drawn between their live screen
+       positions, so it stays attached to the content (pins and entrance animations included).
+       In the lists the thread runs down the left margin, so it never crosses text. */
+    (function () {
+      var svg = document.getElementById('thread'), ball = document.getElementById('ball');
+      var dim = svg.querySelector('.dim'), lit = svg.querySelector('.lit'), nodesG = svg.querySelector('.nodes');
+      html.classList.add('thread');
+      var D = sceneTL.duration();
+      var focus = function () { return innerHeight * 0.46; };
+      var gutEl = document.querySelector('#work .wrap'), mg = 18;
+      var margin = function () { return mg; };
+      function measureMargin() { mg = Math.max(8, (parseFloat(getComputedStyle(gutEl).paddingLeft) || 20) * 0.45); }
+      function absTop(el) { var y = 0; while (el) { y += el.offsetTop; el = el.offsetParent; } return y; }
+      /* where a stop sits on screen right now */
+      function pos(st) {
+        var r = st.el.getBoundingClientRect();
+        if (st.side) return { x: margin(), y: r.top + r.height / 2 };
+        return { x: r.left + r.width * (st.ax == null ? 0.5 : st.ax), y: r.top + r.height * (st.ay == null ? 0.5 : st.ay) };
+      }
+      var stops = [];
+      function add(el, o) { if (el && el.getClientRects().length && (el.offsetHeight || el.getBoundingClientRect().height)) stops.push(Object.assign({ el: el }, o || {})); }   /* skip hidden ones (closed lists) */
+      function build() {
+        measureMargin(); stops = [];
+        add(document.getElementById('globe'), { at: 0 });
+        var eye = document.querySelector('#manifesto .eye');
+        add(eye, { st: mfST, f: 0, eye: 1 }); add(eye, { st: mfST, f: 0.82, eye: 1 });
+        add(eye, { st: mfST, f: 1, side: 1 });                       /* rolls out along the eye's own line to the margin */
+        var sc = sceneTL.scrollTrigger, t1 = document.querySelector('#scene .t1');
+        add(document.querySelector('#scene .kicker'), { st: sc, f: 0, side: 1, node: 1 });
+        add(t1, { st: sc, f: 0.5 / D, side: 1 });                    /* down the margin to the label row… */
+        [['t1', 0.6], ['t2', 2.2], ['t3', 3.8], ['t4', 5.0]].forEach(function (t) { add(document.querySelector('#scene .' + t[0]), { st: sc, f: (t[1] + 0.35) / D, ax: 0 }); });   /* the ball docks on each label's edge, never on its text */
+        add(document.querySelector('#scene .t4'), { st: sc, f: 1, ax: 0 });
+        add(document.querySelector('#work .kicker'), { side: 1, node: 1 });
+        document.querySelectorAll('#work .stats > div:first-child, details.case > summary').forEach(function (e) { add(e, { side: 1, node: 1 }); });
+        add(document.querySelector('.marquee'), { side: 1 });
+        add(document.querySelector('#skills .kicker'), { side: 1, node: 1 });
+        document.querySelectorAll('.sk > div').forEach(function (e, i) { if (i === 0 || innerWidth <= 1100) add(e, { side: 1, node: 1 }); });
+        add(document.querySelector('#experience .kicker'), { side: 1, node: 1 });
+        document.querySelectorAll('.xp > h3, .xp > .xr, .xp > details > .xr').forEach(function (e) { add(e, { side: 1, node: 1 }); });
+        add(document.querySelector('#contact .kicker'), { side: 1, node: 1 });
+        var talk = document.querySelector('.talk-btn');
+        add(talk, { side: 1 });                                       /* …and in from the margin: the ball ends inside "let's talk" */
+        add(talk, { last: 1, ay: 0.8 });                            /* below the words, inside the circle */
+        /* scroll position of each stop */
+        var max = ScrollTrigger.maxScroll(window), prev = -1e9, f = focus();
+        stops.forEach(function (st) {
+          var s;
+          if (st.at === 0) s = 0;
+          else if (st.st) s = st.st.start + st.f * (st.st.end - st.st.start);
+          else if (st.last) s = max;
+          else s = absTop(st.el) + st.el.offsetHeight / 2 - f;
+          s = Math.min(max, Math.max(s, prev + 30));
+          st.s = s; prev = s;
+        });
+        if (stops.length) stops[stops.length - 1].s = Math.max(stops[stops.length - 1].s, max);
+        nodesG.innerHTML = stops.map(function (st, i) { return st.node ? '<circle data-i="' + i + '" r="4.5"/>' : ''; }).join('');
+      }
+      function curve(a, b) {             /* S-curve that leaves and arrives vertically */
+        var dy = (b.y - a.y) * 0.5;
+        return [a, { x: a.x, y: a.y + dy }, { x: b.x, y: b.y - dy }, b];
+      }
+      function at(c, t) {                /* point on a cubic + the part of it up to t (de Casteljau) */
+        var l = function (p, q) { return { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t }; };
+        var p01 = l(c[0], c[1]), p12 = l(c[1], c[2]), p23 = l(c[2], c[3]), a = l(p01, p12), b = l(p12, p23), p = l(a, b);
+        return { p: p, head: [c[0], p01, a, p] };
+      }
+      var D2 = function (c) { return 'M' + c[0].x.toFixed(1) + ' ' + c[0].y.toFixed(1) + 'C' + c[1].x.toFixed(1) + ' ' + c[1].y.toFixed(1) + ' ' + c[2].x.toFixed(1) + ' ' + c[2].y.toFixed(1) + ' ' + c[3].x.toFixed(1) + ' ' + c[3].y.toFixed(1); };
+      var bx = gsap.quickSetter(ball, 'x', 'px'), by = gsap.quickSetter(ball, 'y', 'px'), last = '';
+      function frame() {
+        if (!stops.length) return;
+        var y = lenis ? lenis.scroll : scrollY, i = 0;
+        while (i < stops.length - 1 && stops[i + 1].s <= y) i++;
+        var a = stops[i], b = stops[Math.min(i + 1, stops.length - 1)];
+        var t = b === a ? 0 : Math.min(1, Math.max(0, (y - a.s) / (b.s - a.s)));
+        t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;     /* ease in-out between stops */
+        var lo = Math.max(0, i - 6), hi = Math.min(stops.length - 1, i + 7), P = [];
+        for (var k = lo; k <= hi; k++) P[k] = pos(stops[k]);
+        var d = '', dl = '';
+        for (k = lo; k < hi; k++) { var c = curve(P[k], P[k + 1]); d += D2(c); if (k < i) dl += D2(c); }
+        var cur = b === a ? { p: P[i], head: null } : at(curve(P[i], P[i + 1]), t);
+        if (cur.head) dl += D2(cur.head);
+        dim.setAttribute('d', d); lit.setAttribute('d', dl);
+        bx(cur.p.x); by(cur.p.y);
+        nodesG.querySelectorAll('circle').forEach(function (n) {
+          var k = +n.dataset.i;
+          if (k < lo || k > hi) { n.style.display = 'none'; return; }
+          n.style.display = ''; n.setAttribute('cx', P[k].x.toFixed(1)); n.setAttribute('cy', P[k].y.toFixed(1));
+          n.classList.toggle('on', k <= i);
+        });
+        /* inside an eye the ball becomes the eye's pupil */
+        var inEye = (a.eye && t < 0.08) || (b.eye && t > 0.92) || (a.eye && b.eye && a.el === b.el);
+        if (inEye + '' !== last) { last = inEye + ''; ball.classList.toggle('pupil', inEye); }
+      }
+      build();
+      ScrollTrigger.addEventListener('refresh', build);
+      window.addEventListener('langchange', function () { setTimeout(build, 50); });
+      window.addEventListener('layoutchange', function () { setTimeout(build, 50); });
+      gsap.ticker.add(frame);
     })();
 
     /* ---------- blocks rise in as they enter ---------- */
@@ -260,7 +363,7 @@
         if (s + txt === state) return;
         state = s + txt; lab.textContent = txt;
         cur.classList.toggle('big', s === 'label');
-        var d = s === 'label' ? 84 : s === 'link' ? 44 : 10;
+        var d = s === 'label' ? 84 : s === 'link' ? 40 : 0;   /* the scroll ball is the page's dot; the cursor only shows over things you can use */
         gsap.to(cur, { width: d, height: d, marginLeft: -d / 2, marginTop: -d / 2, duration: 0.45, ease: 'power3' });
       }
       document.addEventListener('pointerleave', function () { gsap.to(cur, { opacity: 0, duration: 0.2 }); });
