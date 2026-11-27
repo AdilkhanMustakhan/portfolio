@@ -102,7 +102,7 @@ html.pre #pre{display:block}
 .eye i{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--ink)}
 #manifesto{position:relative;border:0;padding:0;min-height:0}
 #manifesto .stage{height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;gap:clamp(24px,6vh,64px);padding:var(--head) 0 4vh;overflow:hidden}
-.mf{font-family:var(--display);text-transform:uppercase;font-weight:700;letter-spacing:-.02em;font-size:clamp(28px,min(6.2vw,11vh),104px);line-height:1.02;text-align:center;max-width:20ch;margin:0 auto;padding:0 var(--gut)}
+.mf{font-family:var(--display);text-transform:uppercase;font-weight:700;letter-spacing:-.02em;font-size:clamp(26px,min(5.6vw,10.5vh),96px);line-height:1;text-align:center;max-width:26ch;margin:0 auto;padding:0 var(--gut)}
 .mf .w,.scrub .w{display:inline-block;white-space:nowrap}
 .mf .c,.scrub .c{display:inline-block}
 html.m .mf .c,html.m .scrub .c{opacity:.14}
@@ -320,7 +320,7 @@ html.m #bands{margin-bottom:100vh;margin-bottom:100svh}
 #work.sheet{z-index:2;--bg:#cfcff1;--ink:#0f0e0d;--pill:#0f0e0d;--pill-ink:#cfcff1;--mute:#55536d;--line:rgba(15,14,13,.16);--soft:rgba(15,14,13,.06);--ink2:#26252f;color-scheme:light}
 #skills.sheet{z-index:3;--bg:#e3e7c5;--ink:#0f0e0d;--pill:#0f0e0d;--pill-ink:#e3e7c5;--mute:#5a5d45;--line:rgba(15,14,13,.16);--soft:rgba(15,14,13,.06);--ink2:#2a2c1f;color-scheme:light;padding-top:0}
 #experience.sheet{z-index:4;--bg:#f2efe8;--ink:#0f0e0d;--pill:#0f0e0d;--pill-ink:#f2efe8;--mute:#6b675f;--line:rgba(15,14,13,.15);--soft:rgba(15,14,13,.05);--ink2:#2b2926;color-scheme:light}
-#contact{z-index:5;background:var(--root-bg);min-height:100vh;min-height:100svh}
+#contact{z-index:5;min-height:100vh;min-height:100svh}
 footer{z-index:5;background:var(--root-bg)}
 .handle{position:absolute;left:50%;top:14px;translate:-50% 0;display:flex;flex-direction:column;gap:4px;align-items:center;z-index:3}
 .handle i{display:block;width:46px;height:7px;border-radius:9px;background:var(--ink)}
@@ -351,7 +351,7 @@ html.m #skills.sheet{min-height:calc(100vh + 160px);min-height:calc(100svh + 160
 html.m #manifesto .stage{display:block;padding:0}
 html.m #manifesto .eye-line{position:absolute;left:0;right:0;top:var(--ly);z-index:3}
 html.m .mf-mask{position:absolute;left:0;right:0;top:var(--ly);bottom:0;overflow:hidden;z-index:1}
-html.m .mf{position:absolute;left:0;right:0;top:0;will-change:transform;transform:translateY(120vh)}
+html.m .mf{position:absolute;left:0;right:0;top:0;margin:0 auto;will-change:transform;transform:translateY(120vh)}
 .mf-circle{z-index:4}
 
 /* ---------- logo: two cartoon eyes (as on motion.zajno) + the name, which opens an email ---------- */
@@ -371,3 +371,34 @@ html.m .mf{position:absolute;left:0;right:0;top:0;will-change:transform;transfor
   .lang{padding:0;width:34px;justify-content:center}.lang .sl,.lang button.on{display:none}.lang button{color:inherit!important;opacity:1!important;width:100%;height:100%}
   #mbtn{width:34px;padding:0;justify-content:center}#mbtn .mt{display:none}#mbtn .burger{margin:0}
 }
+
+/* ---------- contact: the last sheet (dark), slides up like the others ---------- */
+#contact.sheet{--bg:#0c0b0b;--ink:#f4f1ea;--pill:#f4f1ea;--pill-ink:#0c0b0b;--mute:#8b877f;--line:#2a2825;--soft:#161514;--ink2:#cfcbc2;color-scheme:dark;padding:16vh 0 0}
+html[data-theme=light] #contact.sheet{--bg:#151413}
+footer{background:#0c0b0b!important;color:#8b877f}
+html[data-theme=light] footer{background:#151413!important}
+#contact h2{max-width:none}
+.c-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:5vw;margin-top:7vh;align-items:start}
+.c-main .lead{margin-top:0}
+#contact .mail{display:inline-block;margin-top:4vh;font-size:clamp(18px,2.35vw,40px);white-space:nowrap;overflow-wrap:normal}
+.c-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:3vh}
+.c-now{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4vh;color:var(--mute);font-size:13px;font-weight:600}
+.c-now b{color:var(--ink);font-variant-numeric:tabular-nums}
+.c-now .dot{width:8px;height:8px;border-radius:50%;background:#59d18c;box-shadow:0 0 0 4px rgba(89,209,140,.18)}
+.c-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.c-card{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:28px;min-height:150px;padding:22px 22px 20px;border:1px solid var(--line);border-radius:26px;overflow:hidden;transition:color .45s var(--ease),border-color .45s}
+.c-card:before{content:"";position:absolute;inset:0;background:var(--pill);transform:translateY(101%);transition:transform .55s var(--ease);z-index:-1}
+.c-card{z-index:0}
+.c-card:hover{color:var(--pill-ink);border-color:var(--pill)}
+.c-card:hover:before{transform:none}
+.c-card small{font-size:12px;font-weight:700;color:var(--mute);transition:color .45s}
+.c-card:hover small{color:inherit;opacity:.7}
+.c-card b{font-family:var(--display);font-weight:700;font-size:clamp(16px,1.4vw,21px);letter-spacing:-.02em;line-height:1.15}
+.c-card i{position:absolute;right:20px;top:18px;font-style:normal;font-size:18px;transition:transform .45s var(--ease)}
+.c-card:hover i{transform:translate(3px,-3px)}
+#contact .foot-line{margin-top:12vh}
+#contact + #hp + footer,footer{background:var(--root-bg)}
+footer{position:relative;z-index:5}
+@media(max-width:900px){.c-grid{grid-template-columns:1fr}}
+@media(max-width:760px){#contact .mail{font-size:5.2vw}.c-cards{grid-template-columns:1fr 1fr;gap:8px}.c-card{min-height:120px;padding:16px;border-radius:20px}}
+@media(max-width:420px){#work .stats>div{padding:0 14px}#work .stats>div span{font-size:10.5px;margin-top:6px}#work .stats>div b{font-size:24px}}

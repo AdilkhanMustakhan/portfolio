@@ -189,3 +189,14 @@ document.querySelectorAll('details.case,details.more').forEach(function(d){
   start();
 })();
 
+
+/* ---------- contact: copy the address, show the local time in Kokshetau ---------- */
+(function(){
+  var b=$('copy-mail');if(b)b.addEventListener('click',function(){
+    var done=function(ok){var l=document.documentElement.lang==='ru';b.textContent=ok?(l?'Скопировано ✓':'Copied ✓'):'adilkhanmustakhan@gmail.com';setTimeout(function(){b.innerHTML=b.getAttribute('data-'+(l?'ru':'en'))},2200)};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText('adilkhanmustakhan@gmail.com').then(function(){done(true)},function(){done(false)});else done(false);
+  });
+  var t=$('local-time');
+  function tick(){try{t.textContent=new Intl.DateTimeFormat('en-GB',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Almaty'}).format(new Date())}catch(e){t.textContent=''}}
+  if(t){tick();setInterval(tick,20000)}
+})();

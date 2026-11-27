@@ -118,8 +118,14 @@
        When the last words are gone, the pupil grows into a circle that becomes the next chapter. */
     var circle = mfStage.querySelector('.mf-circle'), mfEyeEl = mfStage.querySelector('.eye'), pupil = mfEyeEl.querySelector('i');
     var mask = mfStage.querySelector('.mf-mask'), charTops = [], maskH = 0, textH = 0;
+    var clear = 0;
     function measureMf() {
-      maskH = mask.clientHeight; textH = mf.offsetHeight;
+      maskH = mask.clientHeight;
+      clear = mfEyeEl.offsetHeight / 2 + Math.max(22, maskH * 0.06);      /* the text always starts below the eye, with air */
+      mf.style.fontSize = '';
+      textH = mf.offsetHeight;
+      var room = maskH - clear - 20;
+      if (textH > room) { mf.style.fontSize = (parseFloat(getComputedStyle(mf).fontSize) * room / textH).toFixed(1) + 'px'; textH = mf.offsetHeight; }
       charTops = Array.prototype.map.call(mf.querySelectorAll('.c'), function (c) { return c.offsetTop + c.offsetHeight / 2; });
       var sr = mfStage.getBoundingClientRect(), er = mfEyeEl.getBoundingClientRect();
       var cx = er.left + er.width / 2 - sr.left, cy = er.top + er.height / 2 - sr.top;
@@ -137,7 +143,7 @@
       var p = st.progress, cs = mf.querySelectorAll('.c');
       if (cs.length !== charTops.length) measureMf();
       light(cs, clamp01(p / 0.3));
-      var ex = ease2(clamp01((p - 0.33) / 0.15)), y0 = Math.max(0, (maskH - textH) / 2), y = y0 - ex * (y0 + textH + 16);
+      var ex = ease2(clamp01((p - 0.33) / 0.15)), y0 = Math.max(clear, (maskH - textH) / 2), y = y0 - ex * (y0 + textH + 16);
       gsap.set(mf, { y: y });
       mfLook = ex;
       var cp = clamp01((p - 0.5) / 0.16);
@@ -165,9 +171,9 @@
     /* the line with the eye draws in, everywhere it appears */
     document.querySelectorAll('.foot-line').forEach(function (l) {
       var inPin = false;
-      gsap.timeline({ scrollTrigger: { trigger: inPin ? '#manifesto' : l, start: inPin ? 'top 85%' : 'top 92%', end: inPin ? 'top top' : 'top 45%', scrub: 0.6 } })
-        .from(l, { scaleX: 0, transformOrigin: '50% 50%', ease: 'none' })
-        .from(l.querySelector('.eye'), { scale: 0, rotation: -90, ease: 'back.out(1.6)' }, 0.4);
+      gsap.timeline({ scrollTrigger: { trigger: l, start: 'top 96%', once: true }, defaults: { duration: 1.1 } })   /* plays once: it sits at the very bottom, where a scroll-scrub could never finish */
+        .from(l, { scaleX: 0, transformOrigin: '50% 50%', ease: 'expo.out' })
+        .from(l.querySelector('.eye'), { scale: 0, rotation: -90, ease: 'back.out(1.6)', duration: 0.8 }, 0.35);
     });
 
 
@@ -295,9 +301,6 @@
       });
       if (sh.classList.contains('sheet')) gsap.fromTo(sh, { '--dim': 0 }, { '--dim': 0.6, ease: 'none', scrollTrigger: { trigger: next, start: 'top bottom', end: 'top top', scrub: true } });
     });
-    /* the closing chapter wipes in from the left */
-    gsap.fromTo('#contact', { clipPath: 'inset(0% 100% 0% 0% round 0px 44px 44px 0px)' }, { clipPath: 'inset(0% 0% 0% 0% round 0px 0px 0px 0px)', ease: 'none',
-      scrollTrigger: { trigger: '#contact', start: 'top bottom', end: 'top 10%', scrub: 0.4 } });
     /* stat circles drift sideways while they pass */
     gsap.matchMedia().add('(min-width: 761px)', function () {
       gsap.fromTo('#work .stats', { x: function () { return innerWidth * 0.07; } }, { x: function () { return -innerWidth * 0.05; }, ease: 'none',
@@ -305,7 +308,7 @@
     });
 
     /* ---------- blocks rise in as they enter ---------- */
-    gsap.utils.toArray('.kicker, .lead, .stats > div, .xp h3, .certs, .earlier, details.more, .talk, .links .pill, .sk h3').forEach(function (el) {
+    gsap.utils.toArray('.kicker, .lead, .stats > div, .xp h3, .certs, .earlier, details.more, #contact .mail, .c-actions, .c-now, .c-card, .sk h3').forEach(function (el) {
       gsap.from(el, { y: 50, opacity: 0, duration: 1.2, ease: EXPO, scrollTrigger: { trigger: el, start: 'top 92%', once: true } });
     });
     ScrollTrigger.batch('details.case', {
@@ -374,7 +377,7 @@
       document.addEventListener('pointerleave', function () { gsap.to(cur, { opacity: 0, duration: 0.2 }); });
       document.addEventListener('pointerenter', function () { gsap.to(cur, { opacity: 1, duration: 0.2 }); });
 
-      document.querySelectorAll('.pill, .talk-btn, .eyes').forEach(function (el) {
+      document.querySelectorAll('.pill, .eyes').forEach(function (el) {
         var big = el.classList.contains('talk-btn'), k = big ? 0.35 : 0.25;
         var mx, my, back;   /* created on first hover and never "overwrite", so they can't cut the intro short */
         el.addEventListener('pointermove', function (e) {
