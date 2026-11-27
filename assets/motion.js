@@ -112,27 +112,47 @@
       document.querySelectorAll('h2.scrub').forEach(function (h) { split(h); });
       scrubs.forEach(function (s) { s.update(s.st); });
     }
-    /* manifesto: the text lights up during the first half of the pin, holds, then a circle grows out of
-       the eye (where the ball sits) and swallows the screen in the next chapter's colour */
-    var circle = mfStage.querySelector('.mf-circle'), mfEyeEl = mfStage.querySelector('.eye');
-    function placeCircle() {
+    /* ---------- manifesto (as on motion.zajno) ----------
+       A horizon line with the eye draws in as the chapter arrives; the ball is the eye's pupil.
+       The text rises from below, each line lighting up as it climbs, and slides away under the line.
+       When the last words are gone, the pupil grows into a circle that becomes the next chapter. */
+    var circle = mfStage.querySelector('.mf-circle'), mfEyeEl = mfStage.querySelector('.eye'), pupil = mfEyeEl.querySelector('i');
+    var mask = mfStage.querySelector('.mf-mask'), charTops = [], maskH = 0, textH = 0;
+    function measureMf() {
+      maskH = mask.clientHeight; textH = mf.offsetHeight;
+      charTops = Array.prototype.map.call(mf.querySelectorAll('.c'), function (c) { return c.offsetTop + c.offsetHeight / 2; });
       var sr = mfStage.getBoundingClientRect(), er = mfEyeEl.getBoundingClientRect();
       var cx = er.left + er.width / 2 - sr.left, cy = er.top + er.height / 2 - sr.top;
       var R = Math.max(Math.hypot(cx, cy), Math.hypot(sr.width - cx, cy), Math.hypot(cx, sr.height - cy), Math.hypot(sr.width - cx, sr.height - cy));
       gsap.set(circle, { left: cx, top: cy, width: 2 * R + 4, height: 2 * R + 4, marginLeft: -R - 2, marginTop: -R - 2 });
     }
     var ease2 = function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+    var clamp01 = function (v) { return Math.min(1, Math.max(0, v)); };
+    /* pin = 300% of the screen: 0–42% text rises and leaves · 45–64% circle grows · last screen: next chapter slides over */
     function mfUpdate(st) {
-      var p = st.progress;
-      /* 0–33% letters light up · 37–64% the circle grows · last screen: the scene slides up over it */
-      light(mf.querySelectorAll('.c'), Math.min(1, p / 0.33));
-      gsap.set(circle, { scale: ease2(Math.min(1, Math.max(0, (p - 0.37) / 0.27))) });
+      var p = st.progress, cs = mf.querySelectorAll('.c');
+      if (cs.length !== charTops.length) measureMf();
+      var tp = clamp01(p / 0.42), y0 = maskH * 0.62, y = y0 - tp * (y0 + textH + 16);   /* starts in the lower part of the screen, so it shows up with the line */
+      gsap.set(mf, { y: y });
+      for (var i = 0; i < cs.length; i++) {          /* a line is grey at the bottom and fully lit by the upper part */
+        var cy = y + charTops[i];
+        cs[i].style.opacity = (0.14 + 0.86 * clamp01((maskH * 0.92 - cy) / (maskH * 0.5))).toFixed(3);
+      }
+      gsap.set(pupil, { x: -16 + 32 * tp });          /* the pupil follows the reading */
+      var cp = clamp01((p - 0.45) / 0.19);
+      gsap.set(circle, { scale: ease2(cp) });
+      pupil.style.opacity = cp > 0 ? 0 : 1;
     }
     var mfST = ScrollTrigger.create({
-      trigger: mfStage, start: 'top top', end: '+=280%', pin: true, anticipatePin: 1, refreshPriority: 10,
-      onUpdate: mfUpdate, onRefresh: function (st) { placeCircle(); mfUpdate(st); }
+      trigger: mfStage, start: 'top top', end: '+=300%', pin: true, anticipatePin: 1, refreshPriority: 10,
+      onUpdate: mfUpdate, onRefresh: function (st) { measureMf(); mfUpdate(st); }
     });
-    scrubs.push({ st: mfST, update: mfUpdate });
+    scrubs.push({ st: mfST, update: function (st) { measureMf(); mfUpdate(st); } });
+    /* the line and the eye arrive with the chapter */
+    gsap.timeline({ scrollTrigger: { trigger: '#manifesto', start: 'top 85%', end: 'top 15%', scrub: 0.6 } })
+      .from(mfStage.querySelector('.eye-line'), { scaleX: 0, transformOrigin: '50% 50%', ease: 'none' })
+      .from(mfEyeEl, { scale: 0, rotation: -90, ease: 'back.out(1.6)' }, 0.45)
+      .from(pupil, { scale: 0, ease: 'back.out(3)' }, 0.8);
     document.querySelectorAll('h2.scrub').forEach(function (h) {
       var upd = function (st) { light(h.querySelectorAll('.c'), st.progress); };
       var st = ScrollTrigger.create({ trigger: h, start: 'top 90%', end: 'top 40%', onUpdate: upd, onRefresh: upd });
@@ -142,8 +162,8 @@
     window.addEventListener('langchange', function () { splitAll(); marqueeFit(); layoutScene(); ScrollTrigger.refresh(); });
 
     /* the line with the eye draws in, everywhere it appears */
-    document.querySelectorAll('.eye-line').forEach(function (l) {
-      var inPin = !!l.closest('#manifesto');
+    document.querySelectorAll('.foot-line').forEach(function (l) {
+      var inPin = false;
       gsap.timeline({ scrollTrigger: { trigger: inPin ? '#manifesto' : l, start: inPin ? 'top 85%' : 'top 92%', end: inPin ? 'top top' : 'top 45%', scrub: 0.6 } })
         .from(l, { scaleX: 0, transformOrigin: '50% 50%', ease: 'none' })
         .from(l.querySelector('.eye'), { scale: 0, rotation: -90, ease: 'back.out(1.6)' }, 0.4);
@@ -214,107 +234,6 @@
       if (lenis) lenis.on('scroll', mark); else window.addEventListener('scroll', mark, { passive: true });
     })();
 
-    /* ---------- the thread: one line and one ball that run through the whole site ----------
-       Stops are real elements, in reading order. Each stop owns a scroll position: for elements in
-       normal flow, the moment they reach the focus line; inside pinned scenes, a point of the pin's
-       progress. Between two stops the ball travels along an S-curve drawn between their live screen
-       positions, so it stays attached to the content (pins and entrance animations included).
-       In the lists the thread runs down the left margin, so it never crosses text. */
-    (function () {
-      var svg = document.getElementById('thread'), ball = document.getElementById('ball');
-      var dim = svg.querySelector('.dim'), lit = svg.querySelector('.lit'), nodesG = svg.querySelector('.nodes');
-      html.classList.add('thread');
-      var D = sceneTL.duration();
-      var focus = function () { return innerHeight * 0.46; };
-      var gutEl = document.querySelector('#work .wrap'), mg = 18;
-      var margin = function () { return mg; };
-      function measureMargin() { mg = Math.max(8, (parseFloat(getComputedStyle(gutEl).paddingLeft) || 20) * 0.45); }
-      /* where a stop sits on screen right now */
-      function pos(st) {
-        var r = st.el.getBoundingClientRect();
-        if (st.side) return { x: margin(), y: r.top + r.height / 2 };
-        return { x: r.left + r.width * (st.ax == null ? 0.5 : st.ax), y: r.top + r.height * (st.ay == null ? 0.5 : st.ay) };
-      }
-      var stops = [];
-      function add(el, o) { if (el && el.getClientRects().length && (el.offsetHeight || el.getBoundingClientRect().height)) stops.push(Object.assign({ el: el }, o || {})); }   /* skip hidden ones (closed lists) */
-      function build() {
-        measureMargin(); stops = [];
-        add(document.getElementById('globe'), { at: 0 });
-        var eye = document.querySelector('#manifesto .eye');
-        add(eye, { st: mfST, f: 0, eye: 1 }); add(eye, { st: mfST, f: 0.64, eye: 1 });   /* stays in the eye while the circle grows out of it */
-        var sc = sceneTL.scrollTrigger, t1 = document.querySelector('#scene .t1');
-        add(document.querySelector('#scene .kicker'), { st: sc, f: 0, side: 1, node: 1 });
-        add(t1, { st: sc, f: 0.5 / D, side: 1 });                    /* down the margin to the label row… */
-        [['t1', 0.6], ['t2', 2.2], ['t3', 3.8], ['t4', 5.0]].forEach(function (t) { add(document.querySelector('#scene .' + t[0]), { st: sc, f: (t[1] + 0.35) / D, ax: 0 }); });   /* the ball docks on each label's edge, never on its text */
-        add(document.querySelector('#scene .t4'), { st: sc, f: 6.2 / D, ax: 0 });
-        add(document.querySelector('#work .kicker'), { side: 1, node: 1 });
-        document.querySelectorAll('#work .stats > div:first-child, details.case > summary').forEach(function (e) { add(e, { side: 1, node: 1 }); });
-        add(document.querySelector('.marquee'), { side: 1 });
-        add(document.querySelector('#skills .kicker'), { side: 1, node: 1 });
-        document.querySelectorAll('.sk > div').forEach(function (e, i) { if (i === 0 || innerWidth <= 1100) add(e, { side: 1, node: 1 }); });
-        add(document.querySelector('#experience .kicker'), { side: 1, node: 1 });
-        document.querySelectorAll('.xp > h3, .xp > .xr, .xp > details > .xr').forEach(function (e) { add(e, { side: 1, node: 1 }); });
-        add(document.querySelector('#contact .kicker'), { side: 1, node: 1 });
-        var talk = document.querySelector('.talk-btn');
-        add(talk, { side: 1 });                                       /* …and in from the margin: the ball ends inside "let's talk" */
-        add(talk, { last: 1, ay: 0.8 });                            /* below the words, inside the circle */
-        /* scroll position of each stop */
-        var max = ScrollTrigger.maxScroll(window), prev = -1e9, f = focus();
-        stops.forEach(function (st) {
-          var s;
-          if (st.at === 0) s = 0;
-          else if (st.st) s = st.st.start + st.f * (st.st.end - st.st.start);
-          else if (st.last) s = max;
-          else s = window.absTop(st.el) + st.el.offsetHeight / 2 - f;
-          s = Math.min(max, Math.max(s, prev + 30));
-          st.s = s; prev = s;
-        });
-        if (stops.length) stops[stops.length - 1].s = Math.max(stops[stops.length - 1].s, max);
-        nodesG.innerHTML = stops.map(function (st, i) { return st.node ? '<circle data-i="' + i + '" r="4.5"/>' : ''; }).join('');
-      }
-      function curve(a, b) {             /* S-curve that leaves and arrives vertically */
-        var dy = (b.y - a.y) * 0.5;
-        return [a, { x: a.x, y: a.y + dy }, { x: b.x, y: b.y - dy }, b];
-      }
-      function at(c, t) {                /* point on a cubic + the part of it up to t (de Casteljau) */
-        var l = function (p, q) { return { x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t }; };
-        var p01 = l(c[0], c[1]), p12 = l(c[1], c[2]), p23 = l(c[2], c[3]), a = l(p01, p12), b = l(p12, p23), p = l(a, b);
-        return { p: p, head: [c[0], p01, a, p] };
-      }
-      var D2 = function (c) { return 'M' + c[0].x.toFixed(1) + ' ' + c[0].y.toFixed(1) + 'C' + c[1].x.toFixed(1) + ' ' + c[1].y.toFixed(1) + ' ' + c[2].x.toFixed(1) + ' ' + c[2].y.toFixed(1) + ' ' + c[3].x.toFixed(1) + ' ' + c[3].y.toFixed(1); };
-      var bx = gsap.quickSetter(ball, 'x', 'px'), by = gsap.quickSetter(ball, 'y', 'px'), last = '';
-      function frame() {
-        if (!stops.length) return;
-        var y = lenis ? lenis.scroll : scrollY, i = 0;
-        while (i < stops.length - 1 && stops[i + 1].s <= y) i++;
-        var a = stops[i], b = stops[Math.min(i + 1, stops.length - 1)];
-        var t = b === a ? 0 : Math.min(1, Math.max(0, (y - a.s) / (b.s - a.s)));
-        t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;     /* ease in-out between stops */
-        var lo = Math.max(0, i - 1), hi = Math.min(stops.length - 1, i + 4), P = [];   /* only the stretch around the ball: no stray old lines over new chapters */
-        for (var k = lo; k <= hi; k++) P[k] = pos(stops[k]);
-        var d = '', dl = '';
-        for (k = lo; k < hi; k++) { var c = curve(P[k], P[k + 1]); d += D2(c); if (k < i) dl += D2(c); }
-        var cur = b === a ? { p: P[i], head: null } : at(curve(P[i], P[i + 1]), t);
-        if (cur.head) dl += D2(cur.head);
-        dim.setAttribute('d', d); lit.setAttribute('d', dl);
-        bx(cur.p.x); by(cur.p.y);
-        nodesG.querySelectorAll('circle').forEach(function (n) {
-          var k = +n.dataset.i;
-          if (k < lo || k > hi) { n.style.display = 'none'; return; }
-          n.style.display = ''; n.setAttribute('cx', P[k].x.toFixed(1)); n.setAttribute('cy', P[k].y.toFixed(1));
-          n.classList.toggle('on', k <= i);
-        });
-        /* inside an eye the ball becomes the eye's pupil */
-        var inEye = (a.eye && t < 0.08) || (b.eye && t > 0.92) || (a.eye && b.eye && a.el === b.el);
-        if (inEye + '' !== last) { last = inEye + ''; ball.classList.toggle('pupil', inEye); }
-      }
-      build();
-      ScrollTrigger.addEventListener('refresh', build);
-      window.addEventListener('langchange', function () { setTimeout(build, 50); });
-      window.addEventListener('layoutchange', function () { setTimeout(build, 50); });
-      gsap.ticker.add(frame);
-    })();
-
     /* ---------- tilted word bands: three huge words sweep across in opposite directions ---------- */
     function fillBands() {
       document.querySelectorAll('#bands .row').forEach(function (r) {
@@ -359,13 +278,13 @@
       start: 'top 94%', once: true,
       onEnter: function (els) { els.forEach(function (e) { e.classList.add('in'); }); gsap.from(els, { y: 40, opacity: 0, duration: 1.1, ease: EXPO, stagger: 0.07 }); }
     });
-    ScrollTrigger.batch('.xr', {           /* job rows slide in from the left, along the timeline */
+    ScrollTrigger.batch('.xr', {           /* job rows rise in from below */
       start: 'top 94%', once: true,
-      onEnter: function (els) { els.forEach(function (e) { e.classList.add('in'); }); gsap.from(els, { x: -90, opacity: 0, duration: 1.1, ease: EXPO, stagger: 0.08 }); }
+      onEnter: function (els) { els.forEach(function (e) { e.classList.add('in'); }); gsap.from(els, { y: 70, opacity: 0, duration: 1.2, ease: EXPO, stagger: 0.09 }); }
     });
-    ScrollTrigger.batch('.sk li', {        /* skill pills fly in from the right */
+    ScrollTrigger.batch('.sk li', {        /* skill pills rise in from below */
       start: 'top 95%', once: true,
-      onEnter: function (els) { gsap.from(els, { x: 70, rotation: 6, opacity: 0, duration: 0.9, ease: EXPO, stagger: 0.025 }); }
+      onEnter: function (els) { gsap.from(els, { y: 46, opacity: 0, duration: 1, ease: EXPO, stagger: 0.03 }); }
     });
     /* case images unmask when a project opens */
     window.addEventListener('caseopen', function (e) {

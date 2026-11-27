@@ -292,17 +292,6 @@ html.m .xr.in:before,html.m details.case.in:after{transform:none}
 html.scrolling details.case summary{pointer-events:none}
 @media(max-width:760px){.mf{font-size:clamp(28px,8.4vw,44px)}}
 
-/* ---------- the thread + ball ---------- */
-#thread,#ball{display:none}
-html.thread #thread{display:block;position:fixed;inset:0;width:100%;height:100%;z-index:31;pointer-events:none;overflow:visible;mix-blend-mode:difference}
-#thread path{fill:none;stroke-width:1.2;stroke-linecap:round}
-#thread .dim{stroke:#fff;opacity:.22}
-#thread .lit{stroke:#fff}
-#thread .nodes circle{fill:#000;stroke:#fff;stroke-opacity:.5;stroke-width:1.2;transition:fill .4s,stroke-opacity .4s}
-#thread .nodes circle.on{fill:#fff;stroke-opacity:1}
-html.thread #ball{display:block;position:fixed;left:0;top:0;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;background:#fff;mix-blend-mode:difference;z-index:32;pointer-events:none;transition:width .45s var(--ease),height .45s var(--ease),margin .45s var(--ease)}
-html.thread #ball.pupil{width:14px;height:14px;margin:-7px 0 0 -7px}
-html.thread #manifesto .eye i{opacity:0}
 main,section,.marquee,footer{position:relative;z-index:1}
 
 /* =================== chapters & transitions (Zajno vocabulary) =================== */
@@ -358,3 +347,12 @@ html[data-theme=light] .sheet{box-shadow:0 -30px 80px rgba(0,0,0,.12)}
 /* reduced motion: no pins, no covers — the chapters just follow each other */
 
 html.m #skills.sheet{min-height:calc(100vh + 160px);min-height:calc(100svh + 160px)}   /* always taller than the screen, so a menu jump can bring its title right under the header */
+
+/* ---------- manifesto v2 (as on motion.zajno): a fixed horizon line with the eye; the text rises from
+   below, lights up line by line and slides away under the line ---------- */
+#manifesto .stage{--ly:max(150px,24%)}
+html.m #manifesto .stage{display:block;padding:0}
+html.m #manifesto .eye-line{position:absolute;left:0;right:0;top:var(--ly);z-index:3}
+html.m .mf-mask{position:absolute;left:0;right:0;top:var(--ly);bottom:0;overflow:hidden;z-index:1}
+html.m .mf{position:absolute;left:0;right:0;top:0;will-change:transform;transform:translateY(120vh)}
+.mf-circle{z-index:4}
